@@ -14,25 +14,21 @@ def test_app_starts_at_empty_upload_without_operator_controls():
     assert not view['execution']['can_approve']
 
 
-def test_completed_example_uses_real_lineage_and_is_read_only(monkeypatch):
+def test_legacy_example_link_starts_empty_live_upload(monkeypatch):
     import groww.workspace
     def forbidden(*args, **kwargs):
-        raise AssertionError('Example must not instantiate a model or run external writes')
+        raise AssertionError('Opening the app must not analyze reviews or write externally')
     monkeypatch.setattr(groww.workspace, 'execute_approved', forbidden)
-    app = AppTest.from_file(ROOT / 'app.py').run(timeout=40)
-    workspace = app.session_state['_workspace']
-    workspace.load_example()
+    monkeypatch.setattr(groww.workspace, 'Engine', forbidden)
+    app = AppTest.from_file(ROOT / 'app.py')
+    app.query_params['example'] = '1'
     app.run(timeout=40)
     assert not app.exception
     view = app.session_state['workspace_view']
-    assert view['mode'] == 'Demo' and view['status'] == 'ready'
-    assert view['metrics']['included_count'] == 13034
-    assert view['metrics']['useful_count'] == 2001
-    assert view['metrics']['nonspecific_count'] == 11033
-    assert len(view['analysis']['themes']) == 5 and len(view['analysis']['quotes']) == 3
-    assert workspace.task.bundle.intelligence_run_id == workspace.task.intelligence.run_id
-    assert not view['execution']['can_approve'] and not view['outputs']['can_edit']
-    assert not view['execution']['states'] and view['execution']['doc_url'] == ''
+    assert view['mode'] == 'Live' and view['status'] == 'empty'
+    assert view['analysis'] is None and view['outputs'] is None
+    assert 'example' not in app.query_params
+    assert not view['execution']['can_approve'] and not view['execution']['states']
 
 
 def test_server_credentials_are_not_in_component_data():

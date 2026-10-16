@@ -1,4 +1,4 @@
-"""Hosted-demo, credential-boundary, and live-run recovery checks; no external writes."""
+"""Deployment, credential-boundary, and live-run recovery checks; no external writes."""
 from datetime import date
 import json
 from pathlib import Path
@@ -89,22 +89,16 @@ def test_live_run_can_resume_with_verified_parent_and_matching_dataset(dataset, 
         store.load('../other', dataset)
 
 
-def test_public_saved_demo_is_read_only_without_operator_login(monkeypatch):
+def test_removed_example_action_cannot_load_artifacts_or_write(monkeypatch):
     import groww.workspace
     calls = []
     monkeypatch.setattr(groww.workspace, 'execute_approved', lambda *a: calls.append(a))
     app = AppTest.from_file(ROOT / 'app.py').run(timeout=40)
     assert not app.exception
     workspace = app.session_state['_workspace']
-    workspace.load_example()
-    app.run(timeout=40)
-    assert not app.exception
-    view = app.session_state['workspace_view']
-    assert view['mode'] == 'Demo' and view['metrics']['included_count'] == 13034
-    assert workspace.task.bundle.run_id == demo_manifest(ROOT)['output_run_id']
-    assert not view['execution']['can_approve']
-    workspace.handle({'id':'demo-approve','type':'approve','payload':{'fingerprint':view['execution']['fingerprint']}})
-    assert not calls and 'cannot make external writes' in workspace.notice
-    workspace.new_live()
-    assert workspace.task is None and workspace.mode == 'Live'
-    assert not calls
+    workspace.handle({'id':'old-example-button','type':'example'})
+    view = workspace.view()
+    assert view['mode'] == 'Live' and view['status'] == 'empty'
+    assert workspace.task is None and workspace.raw is None
+    assert 'removed' in view['notice']
+    assert not view['execution']['can_approve'] and not calls

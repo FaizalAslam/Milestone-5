@@ -218,13 +218,13 @@ def test_excluded_export_does_not_mislabel_valid_nonspecific_reviews(dataset,sou
     assert len(list(csv.DictReader(io.StringIO(workspace.download['content'])))) == 4
 
 
-def test_mode_and_period_changes_do_not_modify_a_running_save(dataset,sources,tmp_path):
+def test_new_upload_and_period_changes_do_not_modify_a_running_save(dataset,sources,tmp_path):
     workspace, _ = configured(tmp_path,dataset,sources)
     finish(workspace)
     workspace.saving = True
     period = (workspace.start_date,workspace.end_date)
     workspace.handle({'id':'period','type':'period','payload':{'start':'2026-08-08','end':'2026-10-16'}})
-    workspace.handle({'id':'mode','type':'example'})
+    workspace.handle({'id':'new-upload','type':'new'})
     assert workspace.mode == 'Live' and (workspace.start_date,workspace.end_date) == period
     assert 'Wait' in workspace.notice
 
@@ -239,14 +239,25 @@ def test_approval_waits_for_background_output_verification(dataset,sources,tmp_p
     assert not workspace.journal.find(workspace.task.bundle.run_id)
 
 
-def test_unchanged_file_restores_verified_completed_run_without_new_model_or_write_calls(tmp_path):
+def test_matching_private_run_restores_without_new_model_or_write_calls(dataset,sources,tmp_path):
+    first, _ = configured(tmp_path,dataset,sources)
+    finish(first)
+    original_id = first.task.bundle.run_id
+    second, engine = configured(tmp_path,dataset,sources)
+    finish(second)
+    assert second.task.bundle.run_id == original_id and not engine.calls
+    assert not second.journal.find(original_id)
+
+
+def test_public_archive_is_not_used_as_an_automatic_live_result(tmp_path):
     root=Path(__file__).resolve().parents[1]
-    # Copy only the immutable public demo references, with an isolated test journal/store.
     import shutil
     shutil.copytree(root/'data/demo',tmp_path/'data/demo')
     workspace=Workspace(tmp_path,{},today=date(2026,10,16),start_threads=False,
-        engine_factory=lambda *_:pytest.fail('Exact current saved analysis should be reused'))
+        engine_factory=lambda *_:pytest.fail('An absent key must block a model call'))
     workspace.upload((root/'groww_reviews_all_platforms_updated.csv').read_bytes(),'original.csv')
-    finish(workspace)
-    assert workspace.task.bundle.run_id == '76326aa28fff423394c24cbbfa0d8c0a'
-    assert not workspace.journal.find(workspace.task.bundle.run_id)
+    assert workspace._cached_result(workspace.dataset) is None
+    workspace.run_analysis(workspace.task,workspace.dataset)
+    assert workspace.task.status == 'blocked' and workspace.task.bundle is None
+    assert 'API key' in workspace.task.error
+    assert not workspace.view()['execution']['can_approve']

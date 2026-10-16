@@ -33,10 +33,11 @@ def settings():
     return result
 
 
-if '_workspace' not in st.session_state:
+if 'example' in st.query_params:
+    del st.query_params['example']
+
+if '_workspace' not in st.session_state or st.session_state['_workspace'].mode != 'Live':
     st.session_state['_workspace'] = register_workspace(Workspace(ROOT, settings()))
-    if st.query_params.get('example') == '1':
-        st.session_state['_workspace'].load_example()
 else:
     st.session_state['_workspace'].update_settings(settings())
 
@@ -56,7 +57,7 @@ def render_workspace():
     if event:
         if event.get('type') == 'restore':
             previous = recover_workspace((event.get('payload') or {}).get('workspace_id'))
-            if previous:
+            if previous and previous.mode == 'Live':
                 previous.update_settings(settings())
                 st.session_state['_workspace'] = previous
             else:

@@ -18,7 +18,6 @@ from zoneinfo import ZoneInfo
 from .analysis import Engine
 from .approval import ACTIONS, N8nMCP, approve, execute_approved, prepare_payload
 from .data import DataError, Dataset, load_csv
-from .demo import demo_manifest, load_demo
 from .execution import ExecutionJournal
 from .export import bundle_artifacts, classifications_csv
 from .intelligence import intelligence_markdown
@@ -112,7 +111,7 @@ class Workspace:
         if self.saving:
             raise ValueError('Wait until the current save result is confirmed before replacing this dataset.')
         if self.mode != 'Live':
-            raise ValueError('Switch to Live to analyze an uploaded CSV. The completed example is read only.')
+            raise ValueError('Start a new analysis before uploading another CSV.')
         if start is not None or end is not None:
             self.set_period(start or self.start_date.isoformat(), end or self.end_date.isoformat())
         # Validate before submitting any model request. Replacing an invalid upload clears its old preview.
@@ -142,13 +141,6 @@ class Workspace:
             intelligence, bundle = self.store.load(run_id, dataset)
             if bundle.last_checked == self.today.isoformat():
                 return intelligence, bundle
-        if not (self.root / 'data/demo/manifest.json').exists():
-            return None
-        manifest = demo_manifest(self.root)
-        if (dataset.digest == manifest['dataset_sha256'] and str(dataset.report_date) == manifest['report_date']
-                and dataset.start_date == date.fromisoformat(manifest['report_date']) - timedelta(days=manifest['weeks'] * 7 - 1)
-                and manifest['source_last_checked'] == self.today.isoformat()):
-            return load_demo(self.root, dataset)
         return None
 
     def run_analysis(self, task: Task, dataset: Dataset):
@@ -207,26 +199,6 @@ class Workspace:
         finally:
             task.finished_at = time.time()
 
-    def load_example(self):
-        if self.saving:
-            raise ValueError('Wait for the current save to finish before switching modes.')
-        self._cancel_analysis()
-        manifest = demo_manifest(self.root)
-        self.start_date = date.fromisoformat(manifest['report_date']) - timedelta(days=manifest['weeks'] * 7 - 1)
-        self.end_date = date.fromisoformat(manifest['report_date'])
-        self.raw = (self.root / 'groww_reviews_all_platforms_updated.csv').read_bytes()
-        self.filename = 'groww_reviews_all_platforms_updated.csv'
-        self.dataset = load_csv(self.raw, self.end_date, manifest['weeks'])
-        intelligence, bundle = load_demo(self.root, self.dataset)
-        self.mode = 'Demo'
-        self.task = Task(status='ready', stage=3, progress=1, intelligence=intelligence, bundle=bundle,
-                         message='Completed example · Original analysis captured 16 October 2026.')
-        self.error = self.error_kind = self.notice = ''
-        self.rejected = self.edited = False
-        self._audit_cache = None
-        self.audit_filter, self.audit_search, self.audit_page = 'all', '', 1
-        self.save_error = ''
-
     def new_live(self):
         if self.saving:
             raise ValueError('Wait for the current save result before starting another analysis.')
@@ -246,7 +218,7 @@ class Workspace:
         return prepare_payload(self.task.bundle, self.settings.get('GOOGLE_DOC_URL', ''))
 
     def _states(self):
-        if self.mode == 'Demo' or not self.task or not self.task.bundle:
+        if self.mode != 'Live' or not self.task or not self.task.bundle:
             return {}
         # Successful receipts remain visible even when destination configuration is later changed.
         record = self.journal.find(self.task.bundle.run_id)
@@ -254,7 +226,7 @@ class Workspace:
 
     def _assert_snapshot(self, expected):
         if self.mode != 'Live':
-            raise ValueError('The completed example cannot make external writes.')
+            raise ValueError('An active uploaded-review workspace is required before external writes.')
         if not self.task or self.task.status != 'ready':
             raise ValueError('Wait until analysis and output verification have finished before approving.')
         payload = self._payload()
@@ -387,14 +359,12 @@ class Workspace:
                 self.upload(base64.b64decode(encoded, validate=True), str(args.get('name', 'reviews.csv')),
                             start=args.get('start'), end=args.get('end'))
             elif action == 'example':
-                self.load_example()
+                raise ValueError('Saved Demo mode has been removed. Upload a reviews CSV to start an analysis.')
             elif action == 'new':
                 self.new_live()
             elif action == 'period':
                 if self.saving:
                     raise ValueError('Wait for the current save to finish before changing the period.')
-                if self.mode == 'Demo':
-                    raise ValueError('The completed example uses its captured reporting period.')
                 self.set_period(args['start'], args['end'])
                 if self.raw:
                     self.upload(self.raw, self.filename)

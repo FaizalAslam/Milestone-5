@@ -10,7 +10,7 @@ The supplied design is implemented as a local Streamlit v2 component with bundle
 - **Results:** up to five ranked themes, three exact quotes, named fee evidence, three deliverable tabs, then the approval panel.
 - **Audit:** disjoint schema/duplicate/date exclusions, nonspecific feedback, search, pagination, CSV export and original-upload hash verification.
 - **Save:** explicit approval is required for one Doc append followed by one unsent Gmail draft. Reject never writes. Confirmed partial failures retry only the remaining action; uncertain outcomes must be reconciled.
-- **Demo:** clearly labelled, immutable and read only. All model and n8n credentials stay on the server.
+- **Upload-only app:** no Demo mode or saved-example link. All model and n8n credentials stay on the server. Historical analysis fixtures remain available for offline verification only.
 
 Wireframe sample figures, fee rates, placeholder credentials and compliance assertions are not treated as real product findings. `docs/UI_REDESIGN.md` records the implementation decisions and verification.
 
@@ -19,7 +19,7 @@ Wireframe sample figures, fee rates, placeholder credentials and compliance asse
 - Dataset audit and Streamlit startup: verified locally against the supplied CSV.
 - Phase 2 runs independently and has passed a live OpenAI run on both the sample and all 13,034 included reviews. It produces five themes, three source-matched quotes, named brokerage evidence, and downloadable per-review assignments.
 - Phase 3 has passed live generation from that exact saved input: a 149-word pulse with three quotes/actions, four source-grounded fee bullets, and matching document/email previews. The analysis and approval regression suite is retained; the wireframe redesign also tests the automatic pipeline, data-quality audit, editing, recovery and write gating.
-- Phase 5 preparation: the upload workspace and read-only completed example load without secrets, live output storage is separate, and the clean GitHub deployment bundle passes a fresh-process smoke test. Source is published to [FaizalAslam/Milestone-5](https://github.com/FaizalAslam/Milestone-5), and the initial GitHub checks passed. Actual hosted deployment remains pending account sign-in.
+- Phase 5 preparation: the upload workspace loads without secrets and does not expose a saved Demo, live output storage is separate, and the clean GitHub deployment bundle passes a fresh-process smoke test. Source is published to [FaizalAslam/Milestone-5](https://github.com/FaizalAslam/Milestone-5), and the initial GitHub checks passed. Actual hosted deployment remains pending account sign-in.
 - MCP initialization, discovery, both action calls, and receipt lookup: verified against a loopback test MCP server using the actual Python SDK and Streamable HTTP.
 - n8n JSON exports: graph references, Code-node syntax, approval rejection, and draft-only Gmail configuration checked locally. All four workflows are published in n8n Cloud, bound to actual child workflows and the receipt ledger, with connected Google credentials. Production MCP authentication, strict tool-schema discovery, and read-only receipt lookup passed on 2026-10-16. The original approved run has successful Google Docs and Gmail draft receipts; the UI redesign preserves those durable receipts and performs no extra Google writes.
 - Hosted URL and real Google Docs/Gmail evidence: pending account configuration and deployment. The original run has successful receipts; screenshots and exact destination-content checks must be attached separately.
@@ -46,7 +46,7 @@ In this prepared workspace, launch directly:
 
 Open `http://127.0.0.1:8502`. `start.ps1` runs the same command. Port 8501 was already occupied during setup.
 
-The app opens **Upload & Processing** in Live mode. Choose an 8-, 10-, or 12-week reporting window (or an inclusive custom 56–84 day range), then upload one CSV. Validation, review intelligence and output generation run automatically. Results appear in **Results Workspace**; use **Data Quality & Audit** for excluded rows and evidence. **Demo** or **View completed example** opens the frozen real analysis without model calls or external writes. There is no operator-password UI. Live files remain in `outputs/private/runs/`; CLI exports retain the `outputs/` paths below.
+The app opens **Upload & Processing** in Live mode. Choose an 8-, 10-, or 12-week reporting window (or an inclusive custom 56–84 day range), then upload one CSV. Validation, review intelligence and output generation run automatically. Results appear in **Results Workspace**; use **Data Quality & Audit** for excluded rows and evidence. The app has no Demo mode; it requires a CSV upload. A legacy `?example=1` URL also opens the upload screen. There is no operator-password UI. Live files remain in `outputs/private/runs/`; CLI exports retain the `outputs/` paths below.
 
 `requirements-lock.txt` records the verified Windows environment; use `requirements.txt` on Streamlit Cloud. Do not upload either virtual environment.
 
@@ -183,7 +183,7 @@ After reconciliation, review and click **Approve and retry remaining actions** f
 
 ## 7. Deploy the hosted prototype
 
-The app uses the supplied wireframe layout, with Results, Upload & Processing, and Data Quality & Audit header tabs. **Live** accepts uploads and **Demo** opens the hash-checked `data/demo/` example read only. An opaque same-browser workspace reference recovers active work after refresh while the server remains running. Reuploading an identical CSV/window restores matching verified saved results and durable save receipts; uncertain actions still require reconciliation.
+The app uses the supplied wireframe layout, with Results, Upload & Processing, and Data Quality & Audit header tabs. The app opens directly to CSV upload. There is no Live/Demo switch or saved-example button. An opaque same-browser workspace reference recovers active work after refresh while the server remains running. Reuploading an identical CSV/window restores matching verified saved results and durable save receipts; uncertain actions still require reconciliation.
 
 Use [the Phase 5 guide](docs/PHASE5.md) and `outputs/groww-streamlit-deployment.zip` for the clean GitHub source bundle. `scripts/verify_phase5.py --save` verifies that this bundle opens without local secrets. Actual hosting and its browser acceptance remain pending account sign-in/configuration; no hosted URL is claimed.
 
@@ -192,7 +192,7 @@ Use [the Phase 5 guide](docs/PHASE5.md) and `outputs/groww-streamlit-deployment.
 3. Paste the configured secrets into the app's **Advanced settings → Secrets**. Google OAuth credentials remain inside n8n, not in this repository.
 4. Deploy and retain the actual returned `*.streamlit.app` URL. If access is restricted, grant the intended reviewer access using Streamlit's normal sharing settings.
 5. Test in a fresh browser session: dataset metrics, automatic upload processing, matching saved-result recovery, source review, rejection with no writes, approval, document link, and draft receipt.
-6. For a fast demonstration, keep the complete `data/demo/` folder and original CSV in the repository. Demo fixes the original report date/window and loads the real Phase 2/3 results automatically. Live analysis never rewrites that public snapshot.
+6. For recording, upload `data/reviews_sample.csv` or the full CSV. First-time uploads run real analysis. Only matching private runs from this deployment can be restored; bundled historical fixtures are never loaded as live results.
 
 Account sign-in, permission grants, and app publication require your connected accounts. A hosted URL must not be claimed until the deployment actually succeeds.
 
