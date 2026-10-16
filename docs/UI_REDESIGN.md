@@ -37,3 +37,9 @@ Sample 2024 dates, counts, auto-square-off rates, fake credential labels, latenc
 ## Verification
 
 Run `python -m pytest`, `node --input-type=module --check < groww/ui/workspace.js`, `node scripts/check_workflows.cjs`, and `python scripts/verify_phase5.py --save`. Browser checks and screenshots are recorded in `outputs/ui_redesign/` and `outputs/ui_redesign_checkpoint.json`. Live and offline checks are distinguished; the redesign never self-approves a real Google write.
+
+## Lighter interface refinement
+
+The latest interface uses shorter labels (Insights, Upload reviews, Review data), white surfaces, subtle dividers and more space between sections. Upload instructions, pipeline labels and save copy are shorter. Theme descriptions remain in their evidence drawers; long quote IDs are under Review details. Data filtering stays visible, while file-integrity and source/execution information are expandable.
+
+Review counts, original quote text, generated fee facts, export contents, approved payloads and write controls are unchanged. The weekly pulse preview omits its repeated title; downloads and approved communication retain the full title. Saved Demo mode remains removed.

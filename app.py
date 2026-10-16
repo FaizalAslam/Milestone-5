@@ -14,7 +14,7 @@ load_dotenv(ROOT / '.env')
 st.set_page_config(page_title='Groww · Review Intelligence', page_icon='📊', layout='wide', initial_sidebar_state='collapsed')
 st.html("""<style>
 [data-testid="stHeader"], [data-testid="stSidebar"], [data-testid="stToolbar"], #MainMenu, footer {display:none!important;}
-[data-testid="stAppViewContainer"], [data-testid="stApp"] {background:#f9f9ff;}
+[data-testid="stAppViewContainer"], [data-testid="stApp"] {background:#f8faf9;}
 .stMainBlockContainer, [data-testid="stMainBlockContainer"] {max-width:none!important;padding:0!important;}
 [data-testid="stVerticalBlock"] {gap:0!important;}
 [data-testid="stMain"] {padding:0!important;}

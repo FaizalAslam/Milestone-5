@@ -46,7 +46,7 @@ In this prepared workspace, launch directly:
 
 Open `http://127.0.0.1:8502`. `start.ps1` runs the same command. Port 8501 was already occupied during setup.
 
-The app opens **Upload & Processing** in Live mode. Choose an 8-, 10-, or 12-week reporting window (or an inclusive custom 56–84 day range), then upload one CSV. Validation, review intelligence and output generation run automatically. Results appear in **Results Workspace**; use **Data Quality & Audit** for excluded rows and evidence. The app has no Demo mode; it requires a CSV upload. A legacy `?example=1` URL also opens the upload screen. There is no operator-password UI. Live files remain in `outputs/private/runs/`; CLI exports retain the `outputs/` paths below.
+The app opens **Upload reviews** in Live mode. Choose an 8-, 10-, or 12-week reporting window (or an inclusive custom 56–84 day range), then upload one CSV. Validation, review intelligence and output generation run automatically. Results appear in **Insights**; use **Review data** for excluded rows and evidence. The app has no Demo mode; it requires a CSV upload. A legacy `?example=1` URL also opens the upload screen. There is no operator-password UI. Live files remain in `outputs/private/runs/`; CLI exports retain the `outputs/` paths below.
 
 `requirements-lock.txt` records the verified Windows environment; use `requirements.txt` on Streamlit Cloud. Do not upload either virtual environment.
 
@@ -83,7 +83,7 @@ Successful Phase 2 runs produce:
 - `outputs/review_intelligence.json`: validated result, including every included review's classification and the input fingerprint.
 - `outputs/review_classifications.csv`: original included review text, IDs, dates, ratings, URLs, sentiment, substantive flag, primary theme, and fee-confusion label. Repeated wording maps back to every original review.
 
-In **Results Workspace**, inspect all ranked themes (top three highlighted), the three original quotes, the recurring fee component, and the three output tabs. Click a theme to inspect original supporting reviews. The fee evidence drawer separates customer reports from official fee facts. Changing the CSV clears the current draft; changing dates requires explicit recalculation. Downloads and tab changes do not rerun analysis.
+In **Insights**, inspect all ranked themes (top three highlighted), the three original quotes, the recurring fee component, and the three output tabs. Click a theme to inspect original supporting reviews. The fee evidence drawer separates customer reports from official fee facts. Changing the CSV clears the current draft; changing dates requires explicit recalculation. Downloads and tab changes do not rerun analysis.
 
 Recheck a saved full-data Phase 2 result without making model or MCP requests:
 
@@ -183,7 +183,7 @@ After reconciliation, review and click **Approve and retry remaining actions** f
 
 ## 7. Deploy the hosted prototype
 
-The app uses the supplied wireframe layout, with Results, Upload & Processing, and Data Quality & Audit header tabs. The app opens directly to CSV upload. There is no Live/Demo switch or saved-example button. An opaque same-browser workspace reference recovers active work after refresh while the server remains running. Reuploading an identical CSV/window restores matching verified saved results and durable save receipts; uncertain actions still require reconciliation.
+The app uses the supplied wireframe layout, with Results, Upload reviews, and Review data header tabs. The app opens directly to CSV upload. There is no Live/Demo switch or saved-example button. An opaque same-browser workspace reference recovers active work after refresh while the server remains running. Reuploading an identical CSV/window restores matching verified saved results and durable save receipts; uncertain actions still require reconciliation.
 
 Use [the Phase 5 guide](docs/PHASE5.md) and `outputs/groww-streamlit-deployment.zip` for the clean GitHub source bundle. `scripts/verify_phase5.py --save` verifies that this bundle opens without local secrets. Actual hosting and its browser acceptance remain pending account sign-in/configuration; no hosted URL is claimed.
 
