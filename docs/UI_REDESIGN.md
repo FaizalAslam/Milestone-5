@@ -43,3 +43,9 @@ Run `python -m pytest`, `node --input-type=module --check < groww/ui/workspace.j
 The latest interface uses shorter labels (Insights, Upload reviews, Review data), white surfaces, subtle dividers and more space between sections. Upload instructions, pipeline labels and save copy are shorter. Theme descriptions remain in their evidence drawers; long quote IDs are under Review details. Data filtering stays visible, while file-integrity and source/execution information are expandable.
 
 Review counts, original quote text, generated fee facts, export contents, approved payloads and write controls are unchanged. The weekly pulse preview omits its repeated title; downloads and approved communication retain the full title. Saved Demo mode remains removed.
+
+## Visual accessibility refinement
+
+The existing layout now uses darker text, dark-green actions, blue selected states and focus rings, and an amber fee-question card. Selection is also shown with borders/underlines and `aria-selected`/`aria-pressed`, rather than colour alone. Secondary labels, links and controls are larger; links are underlined and form boundaries are stronger.
+
+Keyboard users can move between output tabs with arrow keys, Home and End. Evidence dialogs keep focus inside while open and return focus on Escape. Operating-system contrast, forced-colour and reduced-motion preferences are respected. Browser verification covers rendered contrast, keyboard behaviour and 320/390-pixel reflow; this is not a claim of a complete WCAG conformance audit.
