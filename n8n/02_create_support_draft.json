@@ -1,0 +1,453 @@
+{
+  "name": "Groww \u2014 create_support_draft",
+  "nodes": [
+    {
+      "id": "workflow-input",
+      "name": "Workflow input",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "envelope",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "validate-approval",
+      "name": "Validate approval",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        0
+      ],
+      "parameters": {
+        "jsCode": "\nconst crypto = require('crypto');\nconst EXPECTED_DOC_URL = 'REPLACE_WITH_GOOGLE_DOC_URL';\nconst ACTION = 'create_support_draft';\nconst envelope = JSON.parse($input.first().json.envelope);\nif (envelope.approved !== true || envelope.action !== ACTION) throw new Error('Approval required for this action');\nconst age = Date.now() - Date.parse(envelope.approved_at);\nif (!Number.isFinite(age) || age < -10000 || age > 30 * 60 * 1000) throw new Error('Approval expired');\nif (typeof envelope.payload_json !== 'string') throw new Error('Missing approved snapshot');\nconst hash = crypto.createHash('sha256').update(envelope.payload_json, 'utf8').digest('hex');\nif (hash !== envelope.payload_hash) throw new Error('Approved content changed');\nconst p = JSON.parse(envelope.payload_json);\nif (!/^[a-f0-9]{32}$/.test(p.run_id)) throw new Error('Invalid run ID');\nif (EXPECTED_DOC_URL.startsWith('REPLACE_') || p.destination_doc_url !== EXPECTED_DOC_URL) throw new Error('Configure and verify the fixed document destination');\nconst docMatch = EXPECTED_DOC_URL.match(/^https:\\/\\/docs\\.google\\.com\\/document\\/d\\/([A-Za-z0-9_-]+)/);\nif (!docMatch) throw new Error('Invalid document destination');\nconst e = p.entry;\nconst fields = ['date','top_themes','weekly_pulse','identified_fee_issue','explanation_bullets','source_links'];\nif (!e || Object.keys(e).sort().join() !== fields.sort().join()) throw new Error('Invalid document entry schema');\nif (!Array.isArray(e.top_themes) || e.top_themes.length !== 3 || !Array.isArray(e.explanation_bullets) || e.explanation_bullets.length < 1 || e.explanation_bullets.length > 6) throw new Error('Output structure invalid');\nif (e.weekly_pulse.trim().split(/\\s+/u).length > 250) throw new Error('Pulse exceeds word limit');\nif (!Array.isArray(e.source_links) || e.source_links.length !== 2 || e.source_links.some(u => !u.startsWith('https://groww.in/'))) throw new Error('Official source links required');\nconst actions = e.weekly_pulse.split('## Product action ideas')[1]?.trim().split('\\n');\nif (!actions || actions.length !== 3 || actions.some((a,i) => !a.startsWith(`${i+1}. `))) throw new Error('Exactly three action ideas required');\nif (!p.email || Object.keys(p.email).sort().join() !== 'body,subject' || !p.email.body.includes(e.weekly_pulse) || !p.email.subject.startsWith('Weekly Product Pulse + Customer Clarification \u2014 Groww \u2014 ')) throw new Error('Invalid draft');\nif (!p.document_text?.includes(e.weekly_pulse) || e.explanation_bullets.some(b => !p.document_text.includes(b) || !p.email.body.includes(b))) throw new Error('Preview and action contents differ');\nconst receipt = {run_id:p.run_id, action:ACTION, payload_hash:hash, approved_at:envelope.approved_at};\nreturn [{json:{payload:p, receipt, ledger_key:p.run_id+':'+ACTION, document_id:docMatch[1]}}];\n"
+      }
+    },
+    {
+      "id": "look-up-receipt",
+      "name": "Look up receipt",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        480,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "REPLACE_LEDGER_TABLE_ID"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "ledger_key",
+              "condition": "eq",
+              "keyValue": "={{ $('Validate approval').first().json.ledger_key }}"
+            }
+          ]
+        },
+        "returnAll": false,
+        "limit": 1
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "id": "inspect-previous",
+      "name": "Inspect previous",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "jsCode": "\nconst prior = $input.first().json;\nconst ctx = $('Validate approval').first().json;\nif (prior.ledger_key && prior.payload_hash !== ctx.receipt.payload_hash) throw new Error('Run ID reused for different content');\nconst receipt = prior.ledger_key ? JSON.parse(prior.receipt_json) : null;\nconst safeRetry = receipt?.status === 'failed' && receipt.safe_to_retry === true;\nreturn [{json:{has_previous:!!prior.ledger_key && !safeRetry, receipt}}];\n"
+      }
+    },
+    {
+      "id": "already-attempted",
+      "name": "Already attempted",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        960,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "has-prior",
+              "leftValue": "={{ $json.has_previous }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "return-previous-receipt",
+      "name": "Return previous receipt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        -220
+      ],
+      "parameters": {
+        "jsCode": "return [{json:$input.first().json.receipt}];"
+      }
+    },
+    {
+      "id": "record-attempt-before-write",
+      "name": "Record attempt before write",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "REPLACE_LEDGER_TABLE_ID"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "ledger_key",
+              "condition": "eq",
+              "keyValue": "={{ $('Validate approval').first().json.ledger_key }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ledger_key": "={{ $('Validate approval').first().json.ledger_key }}",
+            "payload_hash": "={{ $('Validate approval').first().json.receipt.payload_hash }}",
+            "status": "in_progress",
+            "receipt_json": "={{ JSON.stringify({...$('Validate approval').first().json.receipt,status:'unknown',message:'Write started; inspect destination before retrying.'}) }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ledger_key",
+              "displayName": "ledger_key",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "payload_hash",
+              "displayName": "payload_hash",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "receipt_json",
+              "displayName": "receipt_json",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "alwaysOutputData": false
+    },
+    {
+      "id": "create-approved-gmail-draft",
+      "name": "Create approved Gmail draft",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1440,
+        0
+      ],
+      "parameters": {
+        "resource": "draft",
+        "operation": "create",
+        "subject": "={{ $('Validate approval').first().json.payload.email.subject }}",
+        "emailType": "text",
+        "message": "={{ $('Validate approval').first().json.payload.email.body }}",
+        "options": {}
+      },
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_GMAIL_CREDENTIAL_ID",
+          "name": "Groww Gmail Drafts"
+        }
+      }
+    },
+    {
+      "id": "build-success-receipt",
+      "name": "Build success receipt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1680,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const ctx=$('Validate approval').first().json;\nconst id=$input.first().json.id; if (!id) throw new Error('Gmail did not return a draft ID'); const remote={draft_id:id};\nreturn [{json:{...ctx.receipt,status:'succeeded',...remote,completed_at:new Date().toISOString(),execution_id:String($execution.id)}}];"
+      }
+    },
+    {
+      "id": "persist-success-receipt",
+      "name": "Persist success receipt",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1920,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "REPLACE_LEDGER_TABLE_ID"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "ledger_key",
+              "condition": "eq",
+              "keyValue": "={{ $('Validate approval').first().json.ledger_key }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ledger_key": "={{ $('Validate approval').first().json.ledger_key }}",
+            "payload_hash": "={{ $json.payload_hash }}",
+            "status": "succeeded",
+            "receipt_json": "={{ JSON.stringify($json) }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ledger_key",
+              "displayName": "ledger_key",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "payload_hash",
+              "displayName": "payload_hash",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "receipt_json",
+              "displayName": "receipt_json",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "alwaysOutputData": false
+    },
+    {
+      "id": "return-success-receipt",
+      "name": "Return success receipt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2160,
+        0
+      ],
+      "parameters": {
+        "jsCode": "return [{json:$('Build success receipt').first().json}];"
+      }
+    }
+  ],
+  "connections": {
+    "Workflow input": {
+      "main": [
+        [
+          {
+            "node": "Validate approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate approval": {
+      "main": [
+        [
+          {
+            "node": "Look up receipt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Look up receipt": {
+      "main": [
+        [
+          {
+            "node": "Inspect previous",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Inspect previous": {
+      "main": [
+        [
+          {
+            "node": "Already attempted",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Already attempted": {
+      "main": [
+        [
+          {
+            "node": "Return previous receipt",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Record attempt before write",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Record attempt before write": {
+      "main": [
+        [
+          {
+            "node": "Create approved Gmail draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create approved Gmail draft": {
+      "main": [
+        [
+          {
+            "node": "Build success receipt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build success receipt": {
+      "main": [
+        [
+          {
+            "node": "Persist success receipt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Persist success receipt": {
+      "main": [
+        [
+          {
+            "node": "Return success receipt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false,
+  "pinData": {},
+  "tags": []
+}

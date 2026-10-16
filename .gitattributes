@@ -1,0 +1,8 @@
+# Preserve original CSV bytes so saved analyses match on Windows and Linux.
+*.csv -text
+# Keep the analysis hash in the verification receipt portable across checkouts.
+outputs/review_intelligence.json -text
+outputs/phase2_checkpoint.json -text
+outputs/latest.json -text
+outputs/phase3_checkpoint.json -text
+data/demo/*.json -text

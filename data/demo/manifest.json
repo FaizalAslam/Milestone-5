@@ -1,0 +1,15 @@
+{
+  "product": "Groww",
+  "report_date": "2026-10-16",
+  "weeks": 12,
+  "dataset_sha256": "dc27d2e477bec67d651d79e040a58fb1392a3eaa23f00e02fb33523bd2daa39c",
+  "included_reviews": 13034,
+  "data_cutoff": "2026-10-14",
+  "intelligence_run_id": "b3a3ffeba193494d8f681e187b25b10f",
+  "output_run_id": "76326aa28fff423394c24cbbfa0d8c0a",
+  "source_last_checked": "2026-10-16",
+  "files": {
+    "review_intelligence.json": "5be998c440f7561c30308ce0cb2f7e3fb50357255555317b6032aef289007772",
+    "latest.json": "5fe4360bd7565fe8dd32edddbe5c34bff80f7210ea5cbc02d7e24760699d5f2d"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "mode": "reference_preview",
+  "dataset_sha256": "dc27d2e477bec67d651d79e040a58fb1392a3eaa23f00e02fb33523bd2daa39c",
+  "identified_fee_issue": "Understanding brokerage separately from total trade charges and taxes",
+  "note": "Manually selected public-review evidence. Full AI theme ranking and counts remain pending a live model run.",
+  "quotes": [
+    {
+      "review_key": "Google Play:0196e447-a8c8-4a43-9f8b-7a8868864177",
+      "date": "2026-08-13",
+      "text": "Highly misleading fees. Groww's marketing implies \"zero brokerage,\" but that’s false for active traders. My recent statement had ₹4,466 in total charges—and a staggering ₹2,076 was pure \"Groww Brokerage,\" plus ₹693 in DP/MIS fees. More than half the fees went directly to Groww, not the government! Their ₹20/order fee eats your profits alive. I strongly advise against using this for intraday.",
+      "source_url": "https://play.google.com/store/apps/details?id=com.nextbillion.groww&reviewId=0196e447-a8c8-4a43-9f8b-7a8868864177"
+    },
+    {
+      "review_key": "Google Play:e651315f-a8aa-4540-9b8d-dc2468d1fc51",
+      "date": "2026-08-14",
+      "text": "hello, I have been using this app for the last 1 year and everything has been going smoothly and well in intraday trading but, from July 2026 this app is taking too much brokerage I don't know why?? my trade for only 1 mint and 1 order after that It will deduct 200+ ₹ charges why? but you mentioned that 20₹/ per order I am very disappointed 😞 😞",
+      "source_url": "https://play.google.com/store/apps/details?id=com.nextbillion.groww&reviewId=e651315f-a8aa-4540-9b8d-dc2468d1fc51"
+    },
+    {
+      "review_key": "Google Play:3c7714ea-d6e5-482c-9f18-fc2e573f133b",
+      "date": "2026-08-06",
+      "text": "they are say less brokerage charge more very bad experience and also when you sell your stock at market they your stock at less price . it's much better I give year subscription fees to zerodha. they atlest to not charge unnecessary. I donot know what kind of external charges and tax they are taking",
+      "source_url": "https://play.google.com/store/apps/details?id=com.nextbillion.groww&reviewId=3c7714ea-d6e5-482c-9f18-fc2e573f133b"
+    }
+  ]
+}

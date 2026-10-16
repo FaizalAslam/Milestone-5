@@ -1,0 +1,253 @@
+{
+  "schema_version": 1,
+  "run_id": "76326aa28fff423394c24cbbfa0d8c0a",
+  "product": "Groww",
+  "date": "2026-10-16",
+  "dataset_sha256": "dc27d2e477bec67d651d79e040a58fb1392a3eaa23f00e02fb33523bd2daa39c",
+  "mode": "openai_live",
+  "model": "gpt-5-mini",
+  "intelligence_run_id": "b3a3ffeba193494d8f681e187b25b10f",
+  "intelligence_fingerprint": "4a422f179f5f615717eb8a0be291462e16a34482c8761ab029cea37c289623a5",
+  "fee_name": "brokerage",
+  "pulse_edited": false,
+  "audit": {
+    "original_count": 13268,
+    "included_count": 13034,
+    "duplicate_count": 0,
+    "invalid_count": 0,
+    "outside_window_count": 234,
+    "future_count": 0,
+    "window_start": "2026-07-25",
+    "window_end": "2026-10-16",
+    "data_cutoff": "2026-10-14",
+    "days_between_cutoff_and_report": 2,
+    "comparison_periods": {
+      "latest": {
+        "start": "2026-10-08",
+        "end": "2026-10-14",
+        "reviews": 840,
+        "missing_observed_dates": []
+      },
+      "preceding": {
+        "start": "2026-10-01",
+        "end": "2026-10-07",
+        "reviews": 947,
+        "missing_observed_dates": []
+      }
+    },
+    "platform_counts": {
+      "Google Play": 12534,
+      "App Store": 500
+    },
+    "rating_counts": {
+      "1": 1351,
+      "2": 212,
+      "3": 350,
+      "4": 1028,
+      "5": 10093
+    },
+    "unique_texts": 6130,
+    "dataset_sha256": "dc27d2e477bec67d651d79e040a58fb1392a3eaa23f00e02fb33523bd2daa39c"
+  },
+  "themes": [
+    {
+      "id": "T3",
+      "name": "Customer support, account access & operational processes",
+      "description": "Many users describe slow/unhelpful support and account access issues that caused real financial harm. Concrete complaints: \"worst customer service. Took more than 2.5 hrs for one response\", \"I have been locked out... ReKYC ... well over a week, and my account is still completely frozen\", \"support chat to manually execute the trade ... I was completely ignored\", \"The escalation team operates in a continuous loop, closing out my tickets with automated, copy-pasted templates\". Other operational issues: delayed redemptions, blocked withdrawals, mandate/UPI notification failures.",
+      "count": 550,
+      "current_week": 34,
+      "previous_week": 46
+    },
+    {
+      "id": "T2",
+      "name": "App stability, performance & UI (charts, lag, device support)",
+      "description": "Frequent reports of app crashes, chart lag, delayed real-time prices, and poor tablet/iPad support. Concrete complaints: \"the charts started lagging very badly after update\", \"bit by bit graphs are not getting updated immediately\", \"App stopped working with old android OS since october 2026\", \"I have this on my phone but it would be great guys if you bring iPad specific interface\", \"When we open the charts the back button on our phone just disappears\". Users also dislike frequent/unstable UI changes and reduced chart/indicator functionality after updates.",
+      "count": 470,
+      "current_week": 17,
+      "previous_week": 47
+    },
+    {
+      "id": "T5",
+      "name": "Missing features & product gaps for traders and investors",
+      "description": "Requests for features and reports of removed/limited functionality: indicators/advanced charting and TradingView integration, scalper mode disappearance, GTT/stop-loss in some order types, home widgets, iPad/tablet layout, more SIP/autopay reliability, additional timeframes/returns in MF dashboard. Concrete complaints: \"Please add ... All candle stick patterns, volume, RSI\", \"Scalper Mode disappered\", \"key features like stoploss in GTT orders ... are missing\", \"Please introduce home screen widgets\", \"When investing in mutual funds ... cart ... no way to access the cart after the fund is added\".",
+      "count": 457,
+      "current_week": 30,
+      "previous_week": 37
+    },
+    {
+      "id": "T4",
+      "name": "Pricing, brokerage and unclear/extra charges",
+      "description": "Widespread complaints about high brokerage, extra/opaque fees and perceived unfair charges. Concrete complaints: \"high brokrage\", \"Groww charges tooo much as brokerage\", \"Flat 5 rs new Extra Charge for every stock purchase\", \"Lost almost 5lakh in charges\", \"Brokerage charges + External charges and Taxes need to be lower\". Users compare competitors offering lower/no brokerage and say costs materially reduce retail returns.",
+      "count": 349,
+      "current_week": 30,
+      "previous_week": 24
+    },
+    {
+      "id": "T1",
+      "name": "Order execution reliability & trading correctness",
+      "description": "Users report orders failing, executing at wrong prices, or executing with delays/slippage during fast markets. Concrete complaints: \"I putting target to sell on 95 but it sell on 93\", \"stop loss doesn’t get placed\", \"order processing slow hai\", \"order was clearly in profit, but when I tried to exit, the order failed or did not execute properly multiple times\", \"stop-loss order got triggered incorrectly at a higher price (₹148.18) when the actual market price was at ₹146.90\". Traders also report missing/mismatched fills and lost trades (e.g., F&O/lot disappearance) and square-off timing/charges problems.",
+      "count": 175,
+      "current_week": 11,
+      "previous_week": 14
+    }
+  ],
+  "sentiment_counts": {
+    "negative": 1742,
+    "positive": 10251,
+    "neutral": 948,
+    "mixed": 93
+  },
+  "non_substantive_count": 11033,
+  "quotes": [
+    {
+      "review_key": "Google Play:4ec7089d-44b6-4a0b-a7cb-566a2f71c0b3",
+      "text": "\"Transaction Successful,\" the funds were never credited to my bank account.",
+      "date": "2026-10-13",
+      "source_url": "https://play.google.com/store/apps/details?id=com.nextbillion.groww&reviewId=4ec7089d-44b6-4a0b-a7cb-566a2f71c0b3",
+      "theme_id": "T3"
+    },
+    {
+      "review_key": "Google Play:a06e5a5f-0daa-4a86-8220-53243a064e3b",
+      "text": "the app does not properly support landscape mode.",
+      "date": "2026-10-08",
+      "source_url": "https://play.google.com/store/apps/details?id=com.nextbillion.groww&reviewId=a06e5a5f-0daa-4a86-8220-53243a064e3b",
+      "theme_id": "T2"
+    },
+    {
+      "review_key": "Google Play:fc618d09-9b3e-4834-add2-5c56b312a92d",
+      "text": "the “Similar Funds in the Same Category” section has been removed.",
+      "date": "2026-10-12",
+      "source_url": "https://play.google.com/store/apps/details?id=com.nextbillion.groww&reviewId=fc618d09-9b3e-4834-add2-5c56b312a92d",
+      "theme_id": "T5"
+    }
+  ],
+  "identified_fee_issue": "brokerage confusion and unexpected Groww brokerage deductions",
+  "fee_evidence": [
+    {
+      "review_key": "Google Play:a5bb0231-e5f2-46df-985a-46b559a577e0",
+      "text": "Easy to use. I need clarity on brokerage charges with tax % for trading in commodities",
+      "date": "2026-08-31",
+      "source_url": "https://play.google.com/store/apps/details?id=com.nextbillion.groww&reviewId=a5bb0231-e5f2-46df-985a-46b559a577e0",
+      "selected_fee_passage": "I need clarity on brokerage charges with tax % for trading in commodities",
+      "confusion_passage": "I need clarity on brokerage charges with tax % for trading in commodities"
+    },
+    {
+      "review_key": "Google Play:e651315f-a8aa-4540-9b8d-dc2468d1fc51",
+      "text": "hello, I have been using this app for the last 1 year and everything has been going smoothly and well in intraday trading but, from July 2026 this app is taking too much brokerage I don't know why?? my trade for only 1 mint and 1 order after that It will deduct 200+ ₹ charges why? but you mentioned that 20₹/ per order I am very disappointed 😞 😞",
+      "date": "2026-08-14",
+      "source_url": "https://play.google.com/store/apps/details?id=com.nextbillion.groww&reviewId=e651315f-a8aa-4540-9b8d-dc2468d1fc51",
+      "selected_fee_passage": "from July 2026 this app is taking too much brokerage I don't know why?? my trade for only 1 mint and 1 order after that It will deduct 200+ ₹ charges why? but you mentioned that 20₹/ per order I am very disappointed",
+      "confusion_passage": "It will deduct 200+ ₹ charges why? but you mentioned that 20₹/ per order"
+    },
+    {
+      "review_key": "Google Play:747ccf48-50ad-43ba-8764-6067e200319c",
+      "text": "⚠️ PLEASE BE CAREFUL WITH THIS APP! ⚠️ This app is extremely bad. I had a very terrible experience and lost ₹500. It was NOT because the market went down. The app deducted a huge amount of money through brokerage and other charges I feel completely disappointed and frustrated with this app. There are too many charges, and the deductions can seriously affect your money. My advice: DO NOT DOWNLOAD OR USE THIS APP without checking every charge and fee carefully. Learn from my experience and be",
+      "date": "2026-09-26",
+      "source_url": "https://play.google.com/store/apps/details?id=com.nextbillion.groww&reviewId=747ccf48-50ad-43ba-8764-6067e200319c",
+      "selected_fee_passage": "The app deducted a huge amount of money through brokerage and other charges I feel completely disappointed and frustrated with this app.",
+      "confusion_passage": "deducted a huge amount of money through brokerage and other charges"
+    },
+    {
+      "review_key": "Google Play:0196e447-a8c8-4a43-9f8b-7a8868864177",
+      "text": "Highly misleading fees. Groww's marketing implies \"zero brokerage,\" but that’s false for active traders. My recent statement had ₹4,466 in total charges—and a staggering ₹2,076 was pure \"Groww Brokerage,\" plus ₹693 in DP/MIS fees. More than half the fees went directly to Groww, not the government! Their ₹20/order fee eats your profits alive. I strongly advise against using this for intraday.",
+      "date": "2026-08-13",
+      "source_url": "https://play.google.com/store/apps/details?id=com.nextbillion.groww&reviewId=0196e447-a8c8-4a43-9f8b-7a8868864177",
+      "selected_fee_passage": "My recent statement had ₹4,466 in total charges—and a staggering ₹2,076 was pure \"Groww Brokerage,\" plus ₹693 in DP/MIS fees.",
+      "confusion_passage": "\"zero brokerage,\""
+    },
+    {
+      "review_key": "Google Play:9c2eef97-7615-46f2-abc8-8f06578afbea",
+      "text": "another 1 star, have applied for multiple IPOs but haven't received for upi request for any of those from last 3 hours this app silently deducting brokerage charge even if the transaction is unsuccessful. people need to pay attention on this. why it forcefully asking to approve autopay if I don't want to, for sip installments?",
+      "date": "2026-08-24",
+      "source_url": "https://play.google.com/store/apps/details?id=com.nextbillion.groww&reviewId=9c2eef97-7615-46f2-abc8-8f06578afbea",
+      "selected_fee_passage": "this app silently deducting brokerage charge even if the transaction is unsuccessful.",
+      "confusion_passage": "this app silently deducting brokerage charge even if the transaction is unsuccessful."
+    }
+  ],
+  "weekly_pulse": "# Weekly Product Pulse — Groww — 2026-10-16\n\n## Top themes\nContext: 2026-07-25–2026-10-16; data through 2026-10-14. 13,034 reviews; 2,001 substantive.\nCustomer support, account access & operational processes (550); App stability, performance & UI (charts, lag, device support) (470); Missing features & product gaps for traders and investors (457).\nReviews flag recurring issues: account/support friction, app stability and missing trader features, plus repeated customer reports of unclear brokerage deductions and fee transparency.\n\n## Supporting user quotes\n\n> “\"Transaction Successful,\" the funds were never credited to my bank account.”\n\n> “the app does not properly support landscape mode.”\n\n> “the “Similar Funds in the Same Category” section has been removed.”\n\n## Key observation\nCustomers repeatedly report unclear/unexpected brokerage deductions and opaque fee breakdowns.\n\n## Product action ideas\n1. Publish per-trade fee breakdown and brokerage calculation logic\n2. Add in-app transaction/funds reconciliation and real-time status\n3. Announce/restore removed fund-comparison features and roadmap",
+  "explanation_bullets": [
+    "For regular equity orders Groww’s published brokerage is the lower of ₹20 or 0.1% of order value per executed order, with a special lower-of minimum rule that applies when computed brokerage is small (the minimum is the lower of ₹5 or 2.5% of the trade value). This applies per executed order and is distinct from other regulatory and exchange charges that together make up total charges.",
+    "For F&O orders the published brokerage is a fixed ₹20 per order; NRI-specific rates differ and Groww documents NRI equity brokerage with a higher minimum and a separate F&O per-order amount, so check the NRI line items for applicability to your account.",
+    "Brokerage is only one component of your statement’s total charges; regulatory/statutory fees, exchange transaction charges, DP charges, GST and conditional penalties (for example auto square-off or delayed payment charges) are itemised separately and together make the total charge amount shown.",
+    "Certain account or funding contexts change brokerage: MTF buy orders and MTF conversions carry 0.1% brokerage by order value plus interest on funded amount; using UPI Mandate balance for equity orders attracts 1% of order value with no cap; these are documented exceptions and apply only in the specified contexts."
+  ],
+  "source_links": [
+    "https://groww.in/pricing",
+    "https://groww.in/help/stocks%2C-f%26o-%26-ipo/searchable/how-much-is-the-brokerage"
+  ],
+  "sources": [
+    {
+      "id": "pricing",
+      "title": "Groww pricing",
+      "url": "https://groww.in/pricing",
+      "checked_at": "2026-10-16",
+      "text": "Account Opening ₹ 0 trading & demat opening Account Maintenance Charges ₹ 0 maintenance charges Equity Brokerage ₹ 20 0.1% per executed order whichever is lower, minimum ₹5 Brokerage Calculator Zero Fixed Charges Zero Hidden Charges START INVESTING Regulatory & Statutory Charges Equity Intraday Delivery STT (Securities Transaction Tax) 0.025% SELL 0.1% BUY SELL Stamp Duty 0.003% BUY 0.015% BUY Exchange Transaction charge NSE: 0.00297% BSE: 0.00375% BUY SELL NSE: 0.00297% BSE: 0.00375% BUY SELL SEBI Turnover charge 0.0001% BUY SELL 0.0001% BUY SELL DP charges (per sell transaction) ₹0 BUY SELL Depository: ₹3.5 (male) and ₹3.25 (female) Groww: ₹16.5 (₹0 for < 100 debit value) SELL Investor Protection Fund Trust charge NSE: 0.0001% BUY SELL NSE: 0.0001% BUY SELL Penalties Auto Square-off charges for open intraday positions by system ₹50 per position Auction If unable to deliver a stock (not in demat) As per actual penalty by exchange Delayed payment charges (DPC) 0.05% per day (inclusive of GST), simple interest, compounded monthly Pledge ₹20 per ISIN, for Pledge/Unpledge order 18% GST On Brokerage, DP charges, Exchange Transaction charges, IPFT, SEBI Turnover charges, Delayed payment charges, DDPI charges, KYC modification request charges, API charges and Auto Square-Off charges MTF charges Brokerage - 0.1% per order of the order value  |  Interest charges - 14.95% per annum on the funded amount Intraday to MTF conversion charges MTF buy order charges are applied on Intraday to MTF conversion - 0.1% per order of the order value BSE Equity exchange transaction charges 0.00345% for all groups except R, SS, ST, ZP (1.0%) X,XT,Z (0.1%) A,B,E,F,FC,G,GC,W,T (0.00375%) NRI brokerage charges Equity (Delivery and Intraday) brokerage: 0.10% with min ₹ 100 per order | F&O: ₹50/order | MF: Direct & Prime both available; Prime in line with regular plans Buyback charges Brokerage - ₹20 per executed transaction  |  DP charges - ₹20 per company, ₹0 < 100 debit value OFS Charges Brokerage - ₹20 per executed transaction Other Charges Demat/Remat: Rs.150 per certification + courier charges  |  Failed Demat Transactions: Rs.50 per ISIN  |  Pledge Invocation: Rs.20  |  Periodic/Adhoc Statement Request: • Email: Free • Physical: Rs.10 per page  |  KYC Modification Request: Rs 50 (including GST)  |  KRA Upload/ Download: Rs.50  |  Delivery Instruction Slip: • First (10 leaves): Free • Addl (10 leaves): Rs.100 + courier charges  |  Physical CMR(Client Master Report): Rs.20 + courier charges  |  Courier Charges: Max of Rs.100 or actual  |  Inter-settlement charges: Depository charges Rs. 3.5 + Groww charges Rs. 16.5 + GST  |  Restat-SOA/Redemption: Rs. 20 + GST  |  DDPI charges: Rs. 100 + GST | Depository charges for Women: Rs. 3.25 UPI Mandate balance charges Equity brokerage for those using UPI Mandate balance is 1% of the order value, no maximum cap. "
+    },
+    {
+      "id": "brokerage",
+      "title": "How much is the brokerage?",
+      "url": "https://groww.in/help/stocks%2C-f%26o-%26-ipo/searchable/how-much-is-the-brokerage",
+      "checked_at": "2026-10-16",
+      "text": "The brokerage charges for trading on Groww are as follows: Stock Trading: ₹20 or 0.1% of trade value per order, whichever is lower. However, if the brokerage per trade is less than ₹5, then the minimum charge will be the lower of ₹5 or 2.5% of your trade value F&O Trading: ₹20 per order Additional charges like regulatory fees, statutory charges, penalties, and GST apply depending on the type of order placed. For an accurate estimate of the charges, you can use our Brokerage Calculator. For a detailed breakdown of fees, please visit our Pricing Section. You can access the Brokerage Calculator or view the Pricing Page by clicking the buttons below "
+    }
+  ],
+  "last_checked": "2026-10-16",
+  "fee_grounding": [
+    {
+      "text": "For regular equity orders Groww’s published brokerage is the lower of ₹20 or 0.1% of order value per executed order, with a special lower-of minimum rule that applies when computed brokerage is small (the minimum is the lower of ₹5 or 2.5% of the trade value). This applies per executed order and is distinct from other regulatory and exchange charges that together make up total charges.",
+      "source_ids": [
+        "brokerage",
+        "pricing"
+      ],
+      "supporting_passages": [
+        "The brokerage charges for trading on Groww are as follows: Stock Trading: ₹20 or 0.1% of trade value per order, whichever is lower. However, if the brokerage per trade is less than ₹5, then the minimum charge will be the lower of ₹5 or 2.5% of your trade value F&O Trading: ₹20 per order Additional",
+        "Account Opening ₹ 0 trading & demat opening Account Maintenance Charges ₹ 0 maintenance charges Equity Brokerage ₹ 20 0.1% per executed order whichever is lower, minimum ₹5 Brokerage Calculator Zero Fixed Charges Zero Hidden Charges START INVESTING Regulatory & Statutory Charges Equity Intraday Delivery STT (Securities Transaction Tax) 0.025% SELL 0.1% BUY SELL Stamp"
+      ]
+    },
+    {
+      "text": "For F&O orders the published brokerage is a fixed ₹20 per order; NRI-specific rates differ and Groww documents NRI equity brokerage with a higher minimum and a separate F&O per-order amount, so check the NRI line items for applicability to your account.",
+      "source_ids": [
+        "brokerage",
+        "pricing"
+      ],
+      "supporting_passages": [
+        "The brokerage charges for trading on Groww are as follows: Stock Trading: ₹20 or 0.1% of trade value per order, whichever is lower. However, if the brokerage per trade is less than ₹5, then the minimum charge will be the lower of ₹5 or 2.5% of your trade value F&O Trading: ₹20 per order Additional",
+        "of the order value BSE Equity exchange transaction charges 0.00345% for all groups except R, SS, ST, ZP (1.0%) X,XT,Z (0.1%) A,B,E,F,FC,G,GC,W,T (0.00375%) NRI brokerage charges Equity (Delivery and Intraday) brokerage: 0.10% with min ₹ 100 per order | F&O: ₹50/order | MF: Direct & Prime both available; Prime in line with regular plans Buyback"
+      ]
+    },
+    {
+      "text": "Brokerage is only one component of your statement’s total charges; regulatory/statutory fees, exchange transaction charges, DP charges, GST and conditional penalties (for example auto square-off or delayed payment charges) are itemised separately and together make the total charge amount shown.",
+      "source_ids": [
+        "pricing",
+        "brokerage"
+      ],
+      "supporting_passages": [
+        "Statutory Charges Equity Intraday Delivery STT (Securities Transaction Tax) 0.025% SELL 0.1% BUY SELL Stamp Duty 0.003% BUY 0.015% BUY Exchange Transaction charge NSE: 0.00297% BSE: 0.00375% BUY SELL NSE: 0.00297% BSE: 0.00375% BUY SELL SEBI Turnover charge 0.0001% BUY SELL 0.0001% BUY SELL DP charges (per sell transaction) ₹0 BUY SELL Depository: ₹3.5 (male)",
+        "lower of ₹5 or 2.5% of your trade value F&O Trading: ₹20 per order Additional charges like regulatory fees, statutory charges, penalties, and GST apply depending on the type of order placed. For an accurate estimate of the charges, you can use our Brokerage Calculator. For a detailed breakdown of fees, please visit our Pricing"
+      ]
+    },
+    {
+      "text": "Certain account or funding contexts change brokerage: MTF buy orders and MTF conversions carry 0.1% brokerage by order value plus interest on funded amount; using UPI Mandate balance for equity orders attracts 1% of order value with no cap; these are documented exceptions and apply only in the specified contexts.",
+      "source_ids": [
+        "pricing"
+      ],
+      "supporting_passages": [
+        "MTF charges Brokerage - 0.1% per order of the order value  |  Interest charges - 14.95% per",
+        "UPI Mandate balance charges Equity brokerage for those using UPI Mandate balance is 1% of the order value, no maximum",
+        "brokerage for those using UPI Mandate balance is 1% of the order value, no maximum cap."
+      ]
+    }
+  ],
+  "fee_fact_check": {
+    "supported": true,
+    "concerns": []
+  },
+  "checks": [
+    "Review counts reconcile",
+    "Three source-matched user quotes",
+    "Recurring fee evidence present",
+    "Pulse ≤250 words and exactly three actions",
+    "Fee explanation ≤6 bullets with exact source grounding",
+    "Two official sources and last-checked date present"
+  ]
+}

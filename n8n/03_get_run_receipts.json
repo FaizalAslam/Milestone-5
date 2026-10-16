@@ -1,0 +1,127 @@
+{
+  "name": "Groww \u2014 get_run_receipts (read only)",
+  "nodes": [
+    {
+      "id": "workflow-input",
+      "name": "Workflow input",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "run_id",
+              "type": "string"
+            },
+            {
+              "name": "payload_hash",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "validate-lookup",
+      "name": "Validate lookup",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        0
+      ],
+      "parameters": {
+        "jsCode": "\nconst p=$input.first().json;\nif (!/^[a-f0-9]{32}$/.test(p.run_id) || !/^[a-f0-9]{64}$/.test(p.payload_hash)) throw new Error('Invalid lookup');\nreturn [{json:p}];\n"
+      }
+    },
+    {
+      "id": "get-run-receipts",
+      "name": "Get run receipts",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        480,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "REPLACE_LEDGER_TABLE_ID"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "payload_hash",
+              "condition": "eq",
+              "keyValue": "={{ $json.payload_hash }}"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "id": "return-run-receipts",
+      "name": "Return run receipts",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "jsCode": "\nconst p=$('Validate lookup').first().json;\nconst receipts=$input.all().filter(i=>i.json.ledger_key?.startsWith(p.run_id+':')).map(i=>JSON.parse(i.json.receipt_json));\nreturn [{json:{run_id:p.run_id,payload_hash:p.payload_hash,receipts}}];\n"
+      }
+    }
+  ],
+  "connections": {
+    "Workflow input": {
+      "main": [
+        [
+          {
+            "node": "Validate lookup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate lookup": {
+      "main": [
+        [
+          {
+            "node": "Get run receipts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get run receipts": {
+      "main": [
+        [
+          {
+            "node": "Return run receipts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false,
+  "pinData": {},
+  "tags": []
+}

@@ -1,0 +1,193 @@
+{
+  "name": "Groww \u2014 approved product and support tools",
+  "nodes": [
+    {
+      "id": "groww-mcp-server",
+      "name": "Groww MCP Server",
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 2,
+      "position": [
+        560,
+        0
+      ],
+      "parameters": {
+        "path": "groww-product-pulse",
+        "authentication": "bearerAuth"
+      },
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "REPLACE_BEARER_CREDENTIAL_ID",
+          "name": "Groww MCP bearer token"
+        }
+      }
+    },
+    {
+      "id": "append_product_update",
+      "name": "append_product_update",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        300,
+        240
+      ],
+      "parameters": {
+        "name": "append_product_update",
+        "description": "Exact approved envelope JSON string supplied by the Streamlit approval controller. append_product_update",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "REPLACE_APPEND_WORKFLOW_ID"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "envelope": "={{ $fromAI('envelope', 'Exact approved envelope JSON string supplied by the Streamlit approval controller', 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "envelope",
+              "displayName": "envelope",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      }
+    },
+    {
+      "id": "create_support_draft",
+      "name": "create_support_draft",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        580,
+        240
+      ],
+      "parameters": {
+        "name": "create_support_draft",
+        "description": "Exact approved envelope JSON string supplied by the Streamlit approval controller. create_support_draft",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "REPLACE_DRAFT_WORKFLOW_ID"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "envelope": "={{ $fromAI('envelope', 'Exact approved envelope JSON string supplied by the Streamlit approval controller', 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "envelope",
+              "displayName": "envelope",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      }
+    },
+    {
+      "id": "get_run_receipts",
+      "name": "get_run_receipts",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        860,
+        240
+      ],
+      "parameters": {
+        "name": "get_run_receipts",
+        "description": "Run ID to inspect, without performing writes. get_run_receipts",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "REPLACE_LOOKUP_WORKFLOW_ID"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "run_id": "={{ $fromAI('run_id', 'Run ID to inspect, without performing writes', 'string') }}",
+            "payload_hash": "={{ $fromAI('payload_hash', 'Approved payload SHA-256', 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "run_id",
+              "displayName": "run_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "payload_hash",
+              "displayName": "payload_hash",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      }
+    }
+  ],
+  "connections": {
+    "append_product_update": {
+      "ai_tool": [
+        [
+          {
+            "node": "Groww MCP Server",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create_support_draft": {
+      "ai_tool": [
+        [
+          {
+            "node": "Groww MCP Server",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_run_receipts": {
+      "ai_tool": [
+        [
+          {
+            "node": "Groww MCP Server",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false,
+  "pinData": {},
+  "tags": []
+}
