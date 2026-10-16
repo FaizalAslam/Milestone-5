@@ -1,5 +1,6 @@
 # Phase 6 — Submission packet
 
+**Current UI:** Upload & Processing automatically runs the review and output stages. Results Workspace contains insights, output tabs and the final approval panel. Data Quality & Audit contains filtering and evidence details. Demo opens the saved example read only. No sidebar/operator password is required; older phase names below describe backend milestones and CLI operations. See [UI redesign](UI_REDESIGN.md).
 Phase 6 assembles the completed local work into a reviewable packet. GitHub/hosted links and real Google Docs/Gmail evidence are intentionally deferred until accounts are connected. Previews remain labelled as previews.
 
 ## What is included

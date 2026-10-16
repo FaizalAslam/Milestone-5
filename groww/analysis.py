@@ -222,6 +222,12 @@ class Engine:
         themes = sorted([dict(t.model_dump(), count=counts[t.id], current_week=current[t.id],
                               previous_week=previous[t.id]) for t in taxonomy.themes],
                         key=lambda t: (-t['count'], t['id']))
+        # Preserve verified general findings for a blocked UI (never approvable fee output).
+        self.partial_insights = {
+            'themes': themes, 'sentiment_counts': dict(sentiments), 'non_substantive_count': nonspecific,
+            'quotes': [], 'assignments': [dict(review_key=r.key, **classifications[r.text_key].model_dump(
+                exclude={'fee_confusion_quote'})) for r in dataset.reviews],
+        }
         if sum(t['count'] > 0 for t in themes) < 3:
             raise AnalysisError('This dataset does not support three populated substantive themes.')
         by_key = {r.key: r for r in dataset.reviews}
@@ -285,6 +291,9 @@ class Engine:
                     raise AnalysisError('Each supporting review needs an exact passage explicitly naming the selected fee.')
 
         progress(0.88, 'Selecting one named fee with distinct, exact supporting passages')
+        self.partial_insights['quotes'] = [dict(review_key=q.review_key, text=q.text,
+            date=str(by_key[q.review_key].date), source_url=by_key[q.review_key].source_url,
+            theme_id=classifications[by_key[q.review_key].text_key].theme_id) for q in selected_quotes]
         fee = self.cached(folder, 'fee-selection', FeeChoice,
             '''Use the supplied F labels for supporting_review_keys and supporting_excerpts.
             Copy labels exactly. Choose the most recurring specific fee confusion

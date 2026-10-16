@@ -1,6 +1,7 @@
 # Phase 4 — Approval, MCP, and destination writes
 
-The implementation is ready for account setup. Local approval, recovery, and real MCP protocol checks pass against test-only tools. **Live n8n/Google acceptance is pending.** A strong app password and the user-selected target document are configured locally. The n8n workspace and workflow editor links have been supplied; the production MCP endpoint, bearer token, and Google credentials still require configuration. Private copies of the four imports with the selected Doc URL are available under `outputs/private/n8n_imports/`; the public templates retain placeholders. End-to-end completion still requires the live checks below.
+**Current UI:** Upload & Processing automatically runs the review and output stages. Results Workspace contains insights, output tabs and the final approval panel. Data Quality & Audit contains filtering and evidence details. Demo opens the saved example read only. No sidebar/operator password is required; older phase names below describe backend milestones and CLI operations. See [UI redesign](UI_REDESIGN.md).
+All four workflows are published in n8n Cloud, with actual child workflow bindings, a receipt ledger, and connected Google credentials. **Live production MCP authentication, strict tool-schema discovery, and read-only receipt lookup passed on 2026-10-16.** No write tools were called. Human approval, one matching Google Docs entry, and one unsent Gmail draft remain required for end-to-end acceptance. Connection evidence is recorded in `outputs/phase4_mcp_connection_checkpoint.json`. Public workflow templates retain account placeholders.
 
 ## 1. Connect the fixed destinations in n8n
 
@@ -20,7 +21,6 @@ These steps follow n8n's [MCP Server Trigger documentation](https://docs.n8n.io/
 Edit `.streamlit/secrets.toml`. Preserve your existing OpenAI key. Populate the following locally; do not paste passwords or tokens into chat:
 
 ```toml
-DEMO_ACCESS_PASSWORD = "your chosen app access password"
 N8N_MCP_URL = "https://YOUR-WORKSPACE.app.n8n.cloud/mcp/YOUR-PRODUCTION-PATH"
 N8N_MCP_TOKEN = "the token from your n8n Bearer Auth credential"
 GOOGLE_DOC_URL = "the exact EXPECTED_DOC_URL configured in both write workflows"
@@ -36,7 +36,7 @@ It checks the authenticated MCP handshake and all three tool input schemas. It n
 
 ## 3. Review the exact snapshot
 
-Start the app with `start.ps1` (or your existing Streamlit command). Choose **Live upload and analysis**, use **2026-10-16 / 12 weeks**, open **Product + support outputs**, and choose **Load saved Phase 3 outputs**. Open **Approve + save**, then unlock the live workflow using the sidebar password. Saved CSV demo mode is read only.
+Start the app with `start.ps1`. In **Live**, use **25 July–16 October 2026** and upload the supplied CSV. Review the validated results and output tabs, then inspect **Save Approved Outputs**. The **Demo** example is read only. A matching already-completed run restores its receipts rather than offering duplicate writes.
 
 Review the visible document destination, complete weekly pulse, brokerage explanation, structured document entry, and complete email subject/body. The six entry fields are `date`, `top_themes`, `weekly_pulse`, `identified_fee_issue`, `explanation_bullets`, and `source_links`. The email recipient stays blank in the Gmail account connected to n8n. No send operation is configured.
 
@@ -44,7 +44,7 @@ The app displays the run ID and content fingerprint. Changing content, regenerat
 
 ## 4. Perform the human approval check
 
-1. Click **Check MCP connection (read only)**. Confirm tool discovery passes and that no Google operation appears in n8n.
+1. Optionally run `scripts/preflight.py --mcp` for read-only discovery. Confirm no Google operation appears in n8n.
 2. Click **Reject**. Confirm the rejection message, no document entry, no draft, and no write workflow execution. Inspect the destinations before proceeding.
 3. Review the same snapshot again and personally click **Approve and save**. This explicit approval authorizes the current fingerprint for 30 minutes.
 4. Confirm one new Doc entry and one unsent Gmail draft. Compare their contents to the approved previews. The receipts must report the expected Doc URL, an actual draft ID, matching run ID/hash, and separate successful action statuses.
@@ -54,11 +54,11 @@ Only the approval controller can invoke write tools. The LLM receives no write-t
 
 ## 5. Understand partial failures and recovery
 
-The app's SQLite journal at `.cache/approval_runs.sqlite3` records approval metadata and marks each action **before** calling MCP. It restores action states after a browser reload without restoring approval. It never stores the bearer token. For a generated/edited live run, unlock Live mode, supply the same CSV/report date, and use **Resume a saved live run** to restore its verified snapshot from `outputs/private/runs/`. n8n separately records its attempt before Google access and persists successful receipts afterward.
+The app's SQLite journal at `.cache/approval_runs.sqlite3` records approval metadata and marks each action **before** calling MCP. It restores action states after a browser reload without restoring approval. It never stores the bearer token. Browser refresh recovers the same in-memory workspace while the server is running. After a server restart, upload the same CSV and reporting window to restore a matching verified result from `outputs/private/runs/`. n8n separately records its attempt before Google access and persists successful receipts afterward.
 
 - **Succeeded:** keep the remote identifier; subsequent attempts skip this action.
 - **Failed, `safe_to_retry: true`:** a remote operator has confirmed no write occurred. Review the same preview, then click **Approve and retry remaining actions** to give fresh approval. Successful actions are skipped.
-- **Unknown / in progress:** a timeout could have happened after the write. The next action stays paused. Inspect the n8n execution and actual Doc/Gmail destination, then use **Refresh remote receipts (read only)**. An empty lookup does not unlock a retry.
+- **Unknown / in progress:** a timeout could have happened after the write. The next action stays paused. Inspect the n8n execution and actual Doc/Gmail destination, then use **Check save result**. An empty lookup does not unlock a retry.
 
 If a remote write occurred but receipt persistence failed, reconcile the existing n8n row's `receipt_json` to `succeeded` with its actual `document_url` or `draft_id`. If you confirm that the write did not occur, reconcile it to `failed` with `safe_to_retry: true`. Preserve `run_id`, `action`, and `payload_hash`, update the row's status, then refresh the app's receipts. Never erase an attempt merely to force a retry.
 

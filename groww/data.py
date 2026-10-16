@@ -4,7 +4,7 @@ import csv
 import hashlib
 import io
 from collections import Counter
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date, timedelta
 from urllib.parse import urlparse
 
@@ -46,6 +46,7 @@ class Dataset:
     report_date: date
     start_date: date
     digest: str
+    exclusions: list[dict] = field(default_factory=list)
 
     def audit(self) -> dict:
         cutoff = max((r.date for r in self.reviews), default=None)
@@ -77,7 +78,7 @@ class Dataset:
         }
 
 
-def load_csv(raw: bytes, report_date: date, weeks: int = 12) -> Dataset:
+def load_csv(raw: bytes, report_date: date, weeks: int = 12, *, start_date: date | None = None) -> Dataset:
     if not 8 <= weeks <= 12:
         raise DataError('Choose a review window between 8 and 12 weeks.')
     if not raw or len(raw) > 15 * 1024 * 1024:
@@ -99,10 +100,20 @@ def load_csv(raw: bytes, report_date: date, weeks: int = 12) -> Dataset:
         raise DataError(f'Malformed CSV: {exc}') from exc
     if not rows or len(rows) > 50000:
         raise DataError('The CSV must contain between 1 and 50,000 reviews.')
-    start = report_date - timedelta(days=weeks * 7 - 1)
+    start = start_date or report_date - timedelta(days=weeks * 7 - 1)
+    if not 56 <= (report_date - start).days + 1 <= 84:
+        raise DataError('The reporting window must cover 8 to 12 weeks (56–84 days).')
     valid, invalid, seen = [], [], set()
+    exclusions = []
     duplicates = outside = future = 0
     for line, row in enumerate(rows, 2):
+        def exclude(category, reason):
+            text = row.get('review_text') or ''
+            exclusions.append({'row': line, 'review_id': row.get('review_id') or '',
+                               'platform': row.get('platform') or '', 'date': row.get('date') or '',
+                               'review_text': text, 'source_url': row.get('source_url') or '',
+                               'category': category, 'reason': reason,
+                               'text_hash': hashlib.sha256(' '.join(text.split()).casefold().encode()).hexdigest()})
         try:
             if None in row or any(row.get(c) is None for c in headers):
                 raise ValueError('Row has a different number of fields than the header.')
@@ -121,15 +132,19 @@ def load_csv(raw: bytes, report_date: date, weeks: int = 12) -> Dataset:
                             row['review_text'], row['source_url'].strip(), row.get('title', ''))
             if review.key in seen:
                 duplicates += 1
+                exclude('duplicate', 'Duplicate review ID within the same platform.')
                 continue
             seen.add(review.key)
             if d > report_date:
                 future += 1
+                exclude('future', 'Review date is after the selected reporting end date.')
             elif d < start:
                 outside += 1
+                exclude('outside', 'Review date is before the selected reporting start date.')
             else:
                 valid.append(review)
         except (ValueError, TypeError) as exc:
             invalid.append({'row': line, 'reason': str(exc)})
+            exclude('invalid', str(exc))
     return Dataset(valid, len(rows), duplicates, invalid, outside, future, report_date, start,
-                   hashlib.sha256(raw).hexdigest())
+                   hashlib.sha256(raw).hexdigest(), exclusions)

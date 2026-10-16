@@ -112,38 +112,31 @@ def test_unsafely_failed_state_never_retries(bundle):
 
 
 def test_phase4_ui_reject_approve_and_reload(bundle, dataset, tmp_path, monkeypatch):
-    import groww.approval
-    import groww.data
-    import groww.execution
-
+    """The custom UI bridge uses this same server controller; fake MCP has no Google access."""
+    import groww.workspace
+    from groww.workspace import Workspace, Task
     transport = FakeTransport()
-    journal = ExecutionJournal(tmp_path / 'execution.sqlite3')
-    monkeypatch.setattr(groww.approval, 'N8nMCP', lambda *_: transport)
-    monkeypatch.setattr(groww.data, 'load_csv', lambda *_: dataset)
-    monkeypatch.setattr(groww.execution, 'ExecutionJournal', lambda *_: journal)
-    app = AppTest.from_file(Path(__file__).resolve().parents[1] / 'app.py')
-    for name, value in {'DEMO_ACCESS_PASSWORD': 'test-only', 'N8N_MCP_URL': 'https://test.n8n.cloud/mcp/test',
-                        'N8N_MCP_TOKEN': 'test-only', 'GOOGLE_DOC_URL': DOC}.items():
-        app.secrets[name] = value
-    app.run(timeout=30)
-    app.selectbox[0].set_value('Live upload and analysis').run(timeout=30)
-    app.session_state['operator_authenticated'] = True
-    app.session_state['bundle'] = bundle
-    app.radio[0].set_value('4 · Approve + save').run()
-    assert not app.exception
-    assert transport.calls == []
-    assert next(t for t in app.text_area if t.label == 'Email body').value.startswith(bundle.weekly_pulse)
-    next(b for b in app.button if b.label == 'Reject').click().run()
-    assert transport.calls == [] and not journal.find(bundle.run_id)
-    assert any('Rejected' in i.value for i in app.info)
-    next(b for b in app.button if b.label == 'Approve and save').click().run()
-    assert not app.exception
+    monkeypatch.setattr(groww.workspace, 'N8nMCP', lambda *_: transport)
+    workspace = Workspace(tmp_path, {'N8N_MCP_URL':'https://test.n8n.cloud/mcp/test',
+        'N8N_MCP_TOKEN':'test-only', 'GOOGLE_DOC_URL':DOC}, start_threads=False)
+    workspace.dataset = dataset
+    workspace.task = Task(status='ready', bundle=bundle)
+    workspace._spawn = lambda fn, *args: fn(*args)
+    view = workspace.view()
+    assert view['outputs']['email']['body'].startswith(bundle.weekly_pulse)
+    assert view['execution']['can_approve'] and not transport.calls
+    workspace.handle({'id':'reject-1','type':'reject'})
+    assert workspace.rejected and not transport.calls
+    assert not workspace.journal.find(bundle.run_id)
+    event = {'id':'approve-1','type':'approve','payload':{'fingerprint':view['execution']['fingerprint']}}
+    workspace.handle(event)
     assert transport.calls == list(ACTIONS)
-    assert any('unsent Gmail draft' in s.value for s in app.success)
-    assert next(b for b in app.button if b.label == 'Approve and save').disabled
-    app.session_state['receipts'] = {}
-    app.session_state['approval'] = None
-    app.run()
-    assert not app.exception
-    assert all(app.session_state['receipts'][a]['status'] == 'succeeded' for a in ACTIONS)
+    assert workspace.view()['execution']['completed']
+    workspace.handle(event)
+    assert transport.calls == list(ACTIONS)
+    # A fresh controller restores durable receipts for the same result without reapproval/writes.
+    restored = Workspace(tmp_path, workspace.settings, start_threads=False)
+    restored.dataset, restored.task = dataset, workspace.task
+    assert restored.view()['execution']['completed']
+    assert not restored.view()['execution']['can_approve']
     assert transport.calls == list(ACTIONS)

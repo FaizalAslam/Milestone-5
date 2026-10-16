@@ -24,15 +24,19 @@ assert not (root / '.streamlit/secrets.toml').exists()
 assert not (root / '.env').exists()
 app = AppTest.from_file(root / 'app.py').run(timeout=40)
 assert not app.exception, [e.message for e in app.exception]
-assert app.selectbox[0].value == 'Saved CSV demo'
-assert app.session_state['bundle'].intelligence_run_id == app.session_state['intelligence'].run_id
-assert [m.value for m in app.metric] == ['13,268','13,034','234','6,130']
-for phase in ['2 · Review intelligence','3 · Product + support outputs','4 · Approve + save']:
-    app.radio[0].set_value(phase).run(timeout=40)
-    assert not app.exception, [e.message for e in app.exception]
-assert next(b for b in app.button if b.label == 'Approve and save').disabled
-print(json.dumps({'status':'PASS','mode':'Saved CSV demo','included_reviews':13034,
-                  'secrets_files_present':False,'all_four_pages_open':True,'approval_disabled':True,
+assert app.session_state['workspace_view']['status'] == 'empty'
+workspace = app.session_state['_workspace']
+workspace.load_example()
+app.run(timeout=40)
+assert not app.exception, [e.message for e in app.exception]
+view = app.session_state['workspace_view']
+assert view['mode'] == 'Demo' and view['metrics']['included_count'] == 13034
+assert workspace.task.bundle.intelligence_run_id == workspace.task.intelligence.run_id
+assert len(view['analysis']['themes']) == 5 and len(view['analysis']['quotes']) == 3
+assert view['outputs']['word_count'] == 149 and len(view['outputs']['fee_bullets']) == 4
+assert not view['execution']['can_approve'] and not view['outputs']['can_edit']
+print(json.dumps({'status':'PASS','mode':'Read-only completed example','included_reviews':13034,
+                  'secrets_files_present':False,'custom_component_loaded':True,'approval_disabled':True,
                   'live_model_calls':0,'external_writes':0}))
 '''
 
@@ -83,10 +87,10 @@ def main():
             '# Phase 5 verification\n\n'
             f'Checked: {checkpoint["checked_at"]}\n\n'
             '- PASS: clean repository bundle extracted and opened in a fresh Python process with no local secrets.\n'
-            '- PASS: saved public CSV demo, all four pages, 13,034 included reviews, matching Phase 2/3 lineage, and locked approval.\n'
+            '- PASS: wireframe component, read-only completed example, 13,034 included reviews, matching Phase 2/3 lineage, and disabled demo approval.\n'
             '- PASS: source archive excludes actual credentials, private live results, caches, and local environments.\n'
             f'- Hosted deployment: **{hosted["status"]}**.\n'
-            '- PENDING: actual hosted URL, fresh-browser visit, authenticated live analysis, and human-approved n8n/Google acceptance.\n\n'
+            '- PENDING: actual hosted URL, fresh-browser visit, automatic live analysis, and human-approved n8n/Google acceptance.\n\n'
             'Local bundle readiness is separate from successful hosting. Follow [the Phase 5 guide](../docs/PHASE5.md).\n', encoding='utf-8')
     print(json.dumps(checkpoint, indent=2))
 

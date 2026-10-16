@@ -89,33 +89,22 @@ def test_live_run_can_resume_with_verified_parent_and_matching_dataset(dataset, 
         store.load('../other', dataset)
 
 
-def test_public_saved_demo_opens_and_cannot_analyze_or_approve_even_when_unlocked(monkeypatch):
-    import groww.analysis
-    import groww.approval
+def test_public_saved_demo_is_read_only_without_operator_login(monkeypatch):
+    import groww.workspace
     calls = []
-    def no_engine(*_):
-        raise AssertionError('Saved demo must not instantiate a live model client')
-    monkeypatch.setattr(groww.analysis, 'Engine', no_engine)
-    monkeypatch.setattr(groww.approval, 'execute_approved', lambda *a: calls.append(a))
-    app = AppTest.from_file(ROOT / 'app.py')
-    app.secrets.update(DEMO_ACCESS_PASSWORD='test-only', OPENAI_API_KEY='test-only',
-                       N8N_MCP_URL='https://test.n8n.cloud/mcp/test', N8N_MCP_TOKEN='test-only',
-                       GOOGLE_DOC_URL='https://docs.google.com/document/d/test-document-id/edit')
-    app.run(timeout=30)
+    monkeypatch.setattr(groww.workspace, 'execute_approved', lambda *a: calls.append(a))
+    app = AppTest.from_file(ROOT / 'app.py').run(timeout=40)
     assert not app.exception
-    assert app.selectbox[0].value == 'Saved CSV demo'
-    assert app.date_input[0].value == date(2026, 10, 16) and app.date_input[0].disabled
-    assert app.session_state['bundle'].run_id == demo_manifest(ROOT)['output_run_id']
-    app.session_state['operator_authenticated'] = True
-    app.radio[0].set_value('2 · Review intelligence').run(timeout=30)
-    assert next(b for b in app.button if b.label == 'Analyze reviews (Phase 2)').disabled
-    app.radio[0].set_value('3 · Product + support outputs').run(timeout=30)
-    assert next(b for b in app.button if b.label == 'Regenerate outputs from Phase 2').disabled
-    app.radio[0].set_value('4 · Approve + save').run(timeout=30)
+    workspace = app.session_state['_workspace']
+    workspace.load_example()
+    app.run(timeout=40)
     assert not app.exception
-    assert next(b for b in app.button if b.label == 'Approve and save').disabled
-    assert not calls
-    app.session_state['approval'] = {'approved': True}
-    app.selectbox[0].set_value('Live upload and analysis').run(timeout=30)
-    assert 'approval' not in app.session_state and 'bundle' not in app.session_state
+    view = app.session_state['workspace_view']
+    assert view['mode'] == 'Demo' and view['metrics']['included_count'] == 13034
+    assert workspace.task.bundle.run_id == demo_manifest(ROOT)['output_run_id']
+    assert not view['execution']['can_approve']
+    workspace.handle({'id':'demo-approve','type':'approve','payload':{'fingerprint':view['execution']['fingerprint']}})
+    assert not calls and 'cannot make external writes' in workspace.notice
+    workspace.new_live()
+    assert workspace.task is None and workspace.mode == 'Live'
     assert not calls

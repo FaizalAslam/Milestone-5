@@ -160,6 +160,12 @@ def build_submission(root: Path, directory: Path, source_archive: Path) -> dict:
             files['verification/' + path.name] = path.read_bytes()
     for path in sorted((root / 'outputs').glob('preview_*.jpg')):
         files['evidence/' + path.name] = path.read_bytes()
+    for name in ['ui_redesign_checkpoint.json', 'ui_redesign_verification.md']:
+        path = root / 'outputs' / name
+        if path.is_file():
+            files['verification/' + name] = path.read_bytes()
+    for path in sorted((root / 'outputs/ui_redesign').glob('*.png')):
+        files['evidence/ui_redesign/' + path.name] = path.read_bytes()
     video_path, meta_path = root / 'outputs/demo/groww_workflow_demo.mp4', root / 'outputs/demo/metadata.json'
     video_ready = video_path.is_file() and meta_path.is_file()
     video_duration = None
@@ -231,12 +237,12 @@ py -3.12 -m venv .venv312
 .\\.venv312\\Scripts\\python.exe -m streamlit run app.py --server.port 8502
 ```
 
-3. Open http://127.0.0.1:8502. The **Saved CSV demo** loads without secrets. All saved insights and both outputs are available; model calls and saving stay locked.
-4. For live use, copy `.streamlit/secrets.toml.example` to `.streamlit/secrets.toml` and configure it locally. Select **Live upload and analysis**, unlock the password, and upload/select reviews. Follow the included Phase 4 and 5 guides for n8n and hosting. Credentials are excluded from this package.
+3. Open http://127.0.0.1:8502. The upload workspace opens without secrets. Click **Demo** to inspect the read-only completed example without model calls or external writes.
+4. For live use, copy `.streamlit/secrets.toml.example` to `.streamlit/secrets.toml` and configure it locally. Choose Live, select the reporting period and upload a CSV. Analysis and output generation start automatically. Follow the included Phase 4 and 5 guides for n8n and hosting. Credentials are excluded from this package.
 
 ## Where MCP approval happens
 
-In **4 · Approve + save**, inspect the fixed document destination, structured entry, pulse, fee snippet, and full email. **Approve and save** authorizes the current content fingerprint for 30 minutes. Reject makes no writes. Edits/regeneration invalidate approval. Completed actions are skipped on retry; unknown outcomes require read-only remote reconciliation. Gmail has a draft-create action only, with no auto-send operation.
+In the **Results Workspace → Save Approved Outputs** panel, inspect the fixed document destination, structured entry, pulse, fee snippet, and full email. **Approve and save** authorizes the current content fingerprint for 30 minutes. Reject makes no writes. Edits/regeneration invalidate approval. Completed actions are skipped on retry; unknown outcomes require read-only remote reconciliation. Gmail has a draft-create action only, with no auto-send operation.
 
 ## Verification and remaining evidence
 

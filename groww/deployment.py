@@ -5,7 +5,7 @@ import json
 from zipfile import ZIP_DEFLATED, ZipFile
 
 
-ROOT_FILES = ['app.py', 'README.md', 'SOURCES.md', 'requirements.txt', 'requirements-lock.txt',
+ROOT_FILES = ['app.py', 'README.md', 'SOURCES.md', 'requirements.txt', 'requirements-lock.txt', 'pytest.ini',
               'start.ps1', '.gitignore', '.gitattributes', '.streamlit/config.toml', 'requirements-demo.txt',
               'submission_links.example.json',
               '.streamlit/secrets.toml.example', '.github/workflows/tests.yml', 'groww_reviews_all_platforms_updated.csv']

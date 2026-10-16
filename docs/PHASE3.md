@@ -1,14 +1,15 @@
 # Phase 3 — Weekly pulse and fee explanation
 
+**Current UI:** Upload & Processing automatically runs the review and output stages. Results Workspace contains insights, output tabs and the final approval panel. Data Quality & Audit contains filtering and evidence details. Demo opens the saved example read only. No sidebar/operator password is required; older phase names below describe backend milestones and CLI operations. See [UI redesign](UI_REDESIGN.md).
 Phase 3 consumes the verified Phase 2 result. It generates the internal note, reusable support snippet, and complete document/email previews. Google Docs and Gmail writes belong to the later explicit approval step.
 
 ## 1. Load the verified insights
 
-The default Saved CSV demo loads both verified outputs automatically. Select **Live upload and analysis** before generating or editing.
+**Demo** loads the verified outputs read only. **Live** uploads automatically run review intelligence followed by output generation.
 
-Use report date **2026-10-16** and **12 weeks** for the supplied CSV. In the app, open **Product + support outputs**. Choose **Load saved Phase 3 outputs** to inspect the completed run, or **Load saved Phase 2 insights** to generate from it. Saved insights must match the original CSV, report window, counts and source records.
+Use **25 July–16 October 2026** for the supplied CSV. The Results Workspace exposes three output tabs. Matching saved results are revalidated against the CSV, period, counts and source records before reuse.
 
-For fresh generation, configure the API key and demo access password locally, unlock the sidebar, and choose **Generate outputs from Phase 2**. The CLI can run this independently:
+For fresh generation, configure the server API key and upload the CSV in Live mode. **More exports and output options → Regenerate outputs** reuses verified review insights and rechecks official sources. The CLI can run this independently:
 
 ```powershell
 .\.venv312\Scripts\python.exe scripts/run_pipeline.py --report-date 2026-10-16 --live --phase3
@@ -40,7 +41,7 @@ The finished explainer has **four bullets**, two official links and **Last check
 
 The page shows:
 
-- Editable pulse for authenticated operators, word/bullet counters and a rendered preview.
+- Editable pulse for unsaved Live results, word/bullet counters and a rendered preview.
 - Customer fee explanation with its source links/check date.
 - Expandable official passages and the source check.
 - Document preview, including the required six-field JSON entry.

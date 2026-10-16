@@ -2,15 +2,27 @@
 
 Streamlit review workspace with OpenAI analysis, checked fee sources, explicit approval, and real MCP calls to n8n Cloud. n8n appends a Google Docs entry and creates a Gmail **draft**. There is no send operation.
 
+## Wireframe interface
+
+The supplied design is implemented as a local Streamlit v2 component with bundled Inter font, responsive layouts, client-only output tabs, evidence drawers and an audit inspector. Review/LLM text is passed as JSON data and escaped before rendering. The original Python analysis, validators, MCP tool contracts, attempt ledger and SQLite approval journal remain authoritative.
+
+- **Upload:** CSV validation precedes automatic background analysis. Generic feedback is excluded from themes; brief concrete complaints remain eligible.
+- **Results:** up to five ranked themes, three exact quotes, named fee evidence, three deliverable tabs, then the approval panel.
+- **Audit:** disjoint schema/duplicate/date exclusions, nonspecific feedback, search, pagination, CSV export and original-upload hash verification.
+- **Save:** explicit approval is required for one Doc append followed by one unsent Gmail draft. Reject never writes. Confirmed partial failures retry only the remaining action; uncertain outcomes must be reconciled.
+- **Demo:** clearly labelled, immutable and read only. All model and n8n credentials stay on the server.
+
+Wireframe sample figures, fee rates, placeholder credentials and compliance assertions are not treated as real product findings. `docs/UI_REDESIGN.md` records the implementation decisions and verification.
+
 ## Current implementation and verification
 
 - Dataset audit and Streamlit startup: verified locally against the supplied CSV.
 - Phase 2 runs independently and has passed a live OpenAI run on both the sample and all 13,034 included reviews. It produces five themes, three source-matched quotes, named brokerage evidence, and downloadable per-review assignments.
-- Phase 3 has passed live generation from that exact saved input: a 149-word pulse with three quotes/actions, four source-grounded fee bullets, and matching document/email previews. All 99 automated tests pass in the clean source bundle, including the Phase 4/5/6 checks.
-- Phase 5 preparation: the default saved demo loads without secrets, live output storage is separate, and the clean GitHub deployment bundle passes a fresh-process smoke test. Source is published to [FaizalAslam/Milestone-5](https://github.com/FaizalAslam/Milestone-5), and the initial GitHub checks passed. Actual hosted deployment remains pending account sign-in.
+- Phase 3 has passed live generation from that exact saved input: a 149-word pulse with three quotes/actions, four source-grounded fee bullets, and matching document/email previews. The analysis and approval regression suite is retained; the wireframe redesign also tests the automatic pipeline, data-quality audit, editing, recovery and write gating.
+- Phase 5 preparation: the upload workspace and read-only completed example load without secrets, live output storage is separate, and the clean GitHub deployment bundle passes a fresh-process smoke test. Source is published to [FaizalAslam/Milestone-5](https://github.com/FaizalAslam/Milestone-5), and the initial GitHub checks passed. Actual hosted deployment remains pending account sign-in.
 - MCP initialization, discovery, both action calls, and receipt lookup: verified against a loopback test MCP server using the actual Python SDK and Streamable HTTP.
-- n8n JSON exports: graph references, Code-node syntax, approval rejection, and draft-only Gmail configuration checked locally. The four workflows have also been imported into n8n Cloud, bound to the actual child workflows and receipt ledger, with Google credentials selected. Authenticated production discovery and human-approved Google execution still need verification.
-- Hosted URL and real Google Docs/Gmail evidence: pending account configuration and deployment. No remote writes have been claimed as completed.
+- n8n JSON exports: graph references, Code-node syntax, approval rejection, and draft-only Gmail configuration checked locally. All four workflows are published in n8n Cloud, bound to actual child workflows and the receipt ledger, with connected Google credentials. Production MCP authentication, strict tool-schema discovery, and read-only receipt lookup passed on 2026-10-16. The original approved run has successful Google Docs and Gmail draft receipts; the UI redesign preserves those durable receipts and performs no extra Google writes.
+- Hosted URL and real Google Docs/Gmail evidence: pending account configuration and deployment. The original run has successful receipts; screenshots and exact destination-content checks must be attached separately.
 - Phase 6: an organized review packet, 2:04 captioned local demo, sample/source audit, deliverable checklist, file hashes, and editable link references are ready. Real account evidence and links remain explicitly pending.
 
 Run the checks below for the latest results. `outputs/verification.md` records what was actually checked.
@@ -34,7 +46,7 @@ In this prepared workspace, launch directly:
 
 Open `http://127.0.0.1:8502`. `start.ps1` runs the same command. Port 8501 was already occupied during setup.
 
-The app defaults to **Saved CSV demo**, with the original report window and real saved analysis loaded automatically. Select **Live upload and analysis** in the sidebar before uploading, generating, editing, or approving. The app saves live files in `outputs/private/runs/`; CLI pipeline exports retain the `outputs/` paths documented below.
+The app opens **Upload & Processing** in Live mode. Choose an 8-, 10-, or 12-week reporting window (or an inclusive custom 56–84 day range), then upload one CSV. Validation, review intelligence and output generation run automatically. Results appear in **Results Workspace**; use **Data Quality & Audit** for excluded rows and evidence. **Demo** or **View completed example** opens the frozen real analysis without model calls or external writes. There is no operator-password UI. Live files remain in `outputs/private/runs/`; CLI exports retain the `outputs/` paths below.
 
 `requirements-lock.txt` records the verified Windows environment; use `requirements.txt` on Streamlit Cloud. Do not upload either virtual environment.
 
@@ -45,11 +57,10 @@ If it does not already exist, copy `.streamlit/secrets.toml.example` to `.stream
 - `OPENAI_API_KEY`: your OpenAI API key.
 - `OPENAI_MODEL`: defaults to `gpt-5-mini`; use an account-accessible Responses model supporting structured outputs.
 - `OPENAI_MAX_WORKERS`: optional, defaults to `4` concurrent classification requests (range 1–8). Use `1` for accounts with tight rate limits. Completed requests remain cached if rate limits stop the run.
-- `DEMO_ACCESS_PASSWORD`: a strong shared password for the operator/reviewer.
 
-Keep the populated file out of Git. Restart the app after configuration. Unlock the workflow in the sidebar. API keys are never requested in the public app UI. Do not paste keys into chat or screenshots.
+Keep the populated file out of Git. Restart the app after configuration. API keys are never requested in the public app UI. Do not paste keys into chat or screenshots.
 
-Choose **Review intelligence → Analyze reviews (Phase 2)**. This runs review analysis only; it does not retrieve fee facts, generate Phase 3 prose, or call MCP. First check it on `data/reviews_sample.csv`, then run the complete supplied CSV. The full CSV contains 6,130 distinct texts in the checked window, so the first full run makes approximately 154 classification calls plus theme discovery and evidence selection. This uses your API quota and may take several minutes. Progress is visible; completed batches resume from `.cache/` after interruption.
+Upload `data/reviews_sample.csv` for an initial check, then the complete supplied CSV. The UI automatically chains review intelligence and source-grounded output generation; no external write happens until **Approve and Save**. The standalone CLI still supports separate Phase 2/3 runs. The full CSV contains 6,130 distinct texts in the checked window, so the first full run makes approximately 154 classification calls plus theme discovery and evidence selection. This uses your API quota and may take several minutes. Progress is visible; completed batches resume from `.cache/` after interruption.
 
 The cache is keyed by CSV fingerprint, report dates, model, and prompt version. It is excluded from Git. No API key is stored in it. Cached taxonomy, batches, and evidence are validated before reuse. An invalid cache file is preserved with an `.invalid-...json` name and replaced by a validated response. A fresh response that fails semantic checks gets one repair attempt before the run stops. API/network failures leave completed batches reusable.
 
@@ -72,7 +83,7 @@ Successful Phase 2 runs produce:
 - `outputs/review_intelligence.json`: validated result, including every included review's classification and the input fingerprint.
 - `outputs/review_classifications.csv`: original included review text, IDs, dates, ratings, URLs, sentiment, substantive flag, primary theme, and fee-confusion label. Repeated wording maps back to every original review.
 
-In the app, inspect the top-three cards, theme table, sentiment chart, three quote cards, and expandable fee evidence. All six checkpoint checks must show PASS. Download the report, JSON, or classifications. **Load saved Phase 2 analysis** verifies the dataset fingerprint, complete audit, window, counts, and evidence again before displaying it. Changing the CSV or reporting window clears the current analysis and any approval. [Phase 2 walkthrough](docs/PHASE2.md) explains each step and its pass criteria.
+In **Results Workspace**, inspect all ranked themes (top three highlighted), the three original quotes, the recurring fee component, and the three output tabs. Click a theme to inspect original supporting reviews. The fee evidence drawer separates customer reports from official fee facts. Changing the CSV clears the current draft; changing dates requires explicit recalculation. Downloads and tab changes do not rerun analysis.
 
 Recheck a saved full-data Phase 2 result without making model or MCP requests:
 
@@ -82,7 +93,7 @@ Recheck a saved full-data Phase 2 result without making model or MCP requests:
 
 This compares the JSON to the original CSV, recomputes the counts, validates all evidence, and checks that the classifications export matches. It exits with an error if any check fails.
 
-For Phase 3, open **Product + support outputs → Load saved Phase 3 outputs** to inspect the completed result. To generate fresh outputs, load the Phase 2 insights on that page, unlock the sidebar, and choose **Generate outputs from Phase 2**. Only this step fetches current official Groww pages and writes the pulse/fee explanation. If it fails, the saved Phase 2 result remains available. The [Phase 3 walkthrough](docs/PHASE3.md) explains the checks, previews, and approval handoff.
+The **Deliverable Outputs** panel contains **Weekly Product Pulse**, **Fee Explanation**, and **Gmail Draft Preview**. Copy or export the current content. Live unsaved pulses support inline editing; **More exports and output options** includes document JSON, full analysis, source passages and regeneration. Edits invalidate approval. Completed or uncertain save snapshots cannot be edited.
 
 Generate Phase 3 from the existing verified insights, without reclassifying reviews:
 
@@ -99,7 +110,7 @@ To run both phases from the command line without invoking any write tools:
 .\.venv312\Scripts\python.exe scripts/run_pipeline.py --report-date 2026-10-16 --live
 ```
 
-Successful Phase 3 runs produce `outputs/latest.json`, `weekly_product_pulse.md`, `fee_explainer.md`, `document_entry.json`, `document_entry_preview.txt`, `email_draft_preview.txt`, `fee_claim_evidence.md`, and `official_fee_sources.json`. The app exposes Markdown, JSON, and email-preview downloads plus document/email previews. Pulse edits require password access, must remain valid, and invalidate approval; valid edits update all previews/exports together. Fee bullets remain tied to their source evidence. A saved result loads only with its matching Phase 2 input, dataset fingerprint, reporting window, and original evidence. Reference evidence stays separate.
+Successful Phase 3 runs produce `outputs/latest.json`, `weekly_product_pulse.md`, `fee_explainer.md`, `document_entry.json`, `document_entry_preview.txt`, `email_draft_preview.txt`, `fee_claim_evidence.md`, and `official_fee_sources.json`. The app exposes Markdown, JSON, and email-preview downloads plus document/email previews. Pulse edits must remain valid and invalidate approval; valid edits update all previews/exports together. Fee bullets remain tied to their source evidence. A saved result loads only with its matching Phase 2 input, dataset fingerprint, reporting window, and original evidence. Reference evidence stays separate.
 
 ## 3. Dataset and analysis behavior
 
@@ -136,7 +147,7 @@ Fee explanations are generated from the two official Groww sources fetched at ru
 
 ## 5. Configure n8n Cloud
 
-See [the Phase 4 walkthrough](docs/PHASE4.md) for account setup, the exact approval demonstration, and recovery. Local approval/MCP checks pass; real Google Docs and Gmail acceptance remains pending account configuration and human approval. Verification is recorded separately in `outputs/phase4_checkpoint.json`.
+See [the Phase 4 walkthrough](docs/PHASE4.md) for account setup, the exact approval demonstration, and recovery. Local approval/MCP checks and production read-only MCP checks pass; real Google Docs and Gmail acceptance remains pending human approval. Local verification is recorded in `outputs/phase4_checkpoint.json`; production connection evidence is in `outputs/phase4_mcp_connection_checkpoint.json`.
 
 All four JSON exports are inactive and contain placeholders rather than credentials. You can regenerate them with `python scripts/build_n8n_workflows.py`.
 
@@ -152,7 +163,7 @@ All four JSON exports are inactive and contain placeholders rather than credenti
    - `get_run_receipts`: strings `run_id` and `payload_hash`.
 8. On **Groww MCP Server**, retain **Bearer Auth**, create/select your bearer credential, and publish. Copy the displayed **production MCP URL**. Use the v2 Streamable HTTP endpoint, not an older `/sse` URL.
 9. Add `N8N_MCP_URL`, `N8N_MCP_TOKEN`, and `GOOGLE_DOC_URL` to the local or hosted Streamlit secrets. The token must match the n8n bearer credential. The prototype accepts n8n Cloud HTTPS hosts; arbitrary URLs are rejected.
-10. Load a validated live AI run, open **Approve + save**, and click **Check MCP connection (read only)**. This initializes MCP and discovers tools; it does not invoke write tools.
+10. Load a validated live AI run, inspect the approval panel. The command `scripts/preflight.py --mcp` performs the optional read-only connection check. This initializes MCP and discovers tools; it does not invoke write tools.
 
 The workflow exports target MCP Trigger v2, Workflow Tool v2.2, and Data Table v1. Their public node schemas were checked against n8n source; imported node configuration and credentials still need verification in your actual n8n version.
 
@@ -172,16 +183,16 @@ After reconciliation, review and click **Approve and retry remaining actions** f
 
 ## 7. Deploy the hosted prototype
 
-The default app opens **Saved CSV demo** from the frozen, hash-checked `data/demo/` snapshot. Choose **Live upload and analysis** for uploads, generation, editing, or approval. A generated local access password is stored only in `.streamlit/secrets.toml`. Live results use `outputs/private/runs/` and can be resumed by an authenticated operator with the matching dataset/window.
+The app uses the supplied wireframe layout, with Results, Upload & Processing, and Data Quality & Audit header tabs. **Live** accepts uploads and **Demo** opens the hash-checked `data/demo/` example read only. An opaque same-browser workspace reference recovers active work after refresh while the server remains running. Reuploading an identical CSV/window restores matching verified saved results and durable save receipts; uncertain actions still require reconciliation.
 
-Use [the Phase 5 guide](docs/PHASE5.md) and `outputs/groww-streamlit-deployment.zip` for the clean GitHub source bundle. `scripts/verify_phase5.py --save` verifies that this bundle opens without local secrets. Actual hosting and Google acceptance remain pending account sign-in/configuration; no hosted URL is claimed.
+Use [the Phase 5 guide](docs/PHASE5.md) and `outputs/groww-streamlit-deployment.zip` for the clean GitHub source bundle. `scripts/verify_phase5.py --save` verifies that this bundle opens without local secrets. Actual hosting and its browser acceptance remain pending account sign-in/configuration; no hosted URL is claimed.
 
 1. Connect GitHub and create a repository containing the source, CSV, `data/`, n8n exports, and requirements. Exclude `.venv*`, `.cache`, `.env`, and populated `secrets.toml`.
 2. In Streamlit Community Cloud, create an app from that repository, branch, entrypoint `app.py`, and Python **3.12**.
 3. Paste the configured secrets into the app's **Advanced settings → Secrets**. Google OAuth credentials remain inside n8n, not in this repository.
 4. Deploy and retain the actual returned `*.streamlit.app` URL. If access is restricted, grant the intended reviewer access using Streamlit's normal sharing settings.
-5. Test in a fresh browser session: dataset metrics, password unlock, live or matching saved AI analysis, source review, rejection with no writes, approval, document link, and draft receipt.
-6. For a fast demonstration, keep the complete `data/demo/` folder and original CSV in the repository. Saved CSV demo fixes the original report date/window and loads the real Phase 2/3 results automatically. Live analysis never rewrites that public snapshot.
+5. Test in a fresh browser session: dataset metrics, automatic upload processing, matching saved-result recovery, source review, rejection with no writes, approval, document link, and draft receipt.
+6. For a fast demonstration, keep the complete `data/demo/` folder and original CSV in the repository. Demo fixes the original report date/window and loads the real Phase 2/3 results automatically. Live analysis never rewrites that public snapshot.
 
 Account sign-in, permission grants, and app publication require your connected accounts. A hosted URL must not be claimed until the deployment actually succeeds.
 

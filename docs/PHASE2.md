@@ -1,14 +1,15 @@
 # Phase 2 — Review intelligence walkthrough
 
+**Current UI:** Upload & Processing automatically runs the review and output stages. Results Workspace contains insights, output tabs and the final approval panel. Data Quality & Audit contains filtering and evidence details. Demo opens the saved example read only. No sidebar/operator password is required; older phase names below describe backend milestones and CLI operations. See [UI redesign](UI_REDESIGN.md).
 Phase 2 transforms the included CSV reviews into auditable insights. It uses OpenAI structured outputs and ends before pulse generation, official fee fact retrieval, or MCP actions.
 
 ## 1. Confirm the input
 
-The default Saved CSV demo already contains the completed analysis. Choose **Live upload and analysis** in the sidebar to upload, change dates, or call the model.
+Choose **Demo** to inspect the completed example, or stay in **Live** and upload the CSV in **Upload & Processing**. The UI automatically chains review analysis and output generation; the CLI below still supports a standalone Phase 2 run.
 
 Select report date **2026-10-16** and **12 weeks**. The supplied CSV must show 13,268 uploaded reviews, 13,034 included reviews, and 6,130 distinct texts. The window is 25 July–16 October, with actual data through 14 October. The source CSV stays unchanged.
 
-Set `OPENAI_API_KEY` and `DEMO_ACCESS_PASSWORD` in `.streamlit/secrets.toml`, restart the app, and unlock the sidebar. Keep credentials local. For a first live check, upload `data/reviews_sample.csv`; it contains 53 unchanged original reviews. Select **Review intelligence → Analyze reviews (Phase 2)**.
+Set `OPENAI_API_KEY` and `DEMO_ACCESS_PASSWORD` in `.streamlit/secrets.toml`, restart the app, and upload the CSV in Live mode. Keep credentials local. For a first live check, upload `data/reviews_sample.csv`; it contains 53 unchanged original reviews. Select **Review intelligence → Analyze reviews (Phase 2)**.
 
 ## 2. Discover themes
 
@@ -24,7 +25,7 @@ Each batch must return exactly the supplied text keys. API requests use short ba
 
 Classifications map back to every original review ID. Two different IDs containing the same text remain two observations. The validator recomputes sentiment, substantive and nonspecific totals, full-window theme counts, and latest/preceding seven-day theme counts from those assignments. The top three themes are ranked by full-window review count, with theme ID breaking ties.
 
-The app displays the three leading themes, all themes, sentiment, and comparison coverage. Different review volumes or an incomplete cutoff day do not by themselves establish a trend.
+The app displays up to five ranked themes with the top three highlighted. Supporting review drawers expose the original evidence; exports retain sentiment and comparison coverage. Different review volumes or an incomplete cutoff day do not by themselves establish a trend.
 
 ## 5. Select evidence
 

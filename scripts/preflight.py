@@ -17,7 +17,7 @@ parser.add_argument('--mcp', action='store_true', help='Initialize MCP and list 
 args = parser.parse_args()
 path = ROOT / '.streamlit' / 'secrets.toml'
 config = tomllib.loads(path.read_text(encoding='utf-8')) if path.exists() else {}
-names = ['OPENAI_API_KEY', 'DEMO_ACCESS_PASSWORD', 'N8N_MCP_URL', 'N8N_MCP_TOKEN', 'GOOGLE_DOC_URL']
+names = ['OPENAI_API_KEY', 'N8N_MCP_URL', 'N8N_MCP_TOKEN', 'GOOGLE_DOC_URL']
 get = lambda name: config.get(name) or os.getenv(name, '')
 result = {'python': sys.version.split()[0],
           'dependencies': {n: importlib.util.find_spec(n) is not None for n in ['streamlit', 'pandas', 'openai', 'mcp', 'pytest']},

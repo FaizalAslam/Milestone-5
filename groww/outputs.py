@@ -32,6 +32,22 @@ def explainer_markdown(bundle: Bundle) -> str:
                       f'Last checked: {bundle.last_checked}'])
 
 
+def fee_question(bundle: Bundle) -> str:
+    """Frame the selected review issue as a question, without adding fee claims."""
+    name = bundle.fee_name.strip()
+    if name.casefold() == 'brokerage' or (not name and 'brokerage' in bundle.identified_fee_issue.casefold()):
+        return 'How is brokerage calculated, and why can my total trade charges be higher?'
+    return f'What is {name}, and how is it calculated?' if name else 'What does this fee cover, and how is it calculated?'
+
+
+def fee_faq_markdown(bundle: Bundle) -> str:
+    """Q&A presentation for the workspace; preserve previously approved exports."""
+    return '\n'.join(['# Frequently Asked Fee Question', '', '## Question', fee_question(bundle),
+                      '', '## Answer', *[f'- {b}' for b in bundle.explanation_bullets], '',
+                      *[f'Source {i}: {url}' for i, url in enumerate(bundle.source_links, 1)], '',
+                      f'Last checked: {bundle.last_checked}'])
+
+
 def email_content(bundle: Bundle) -> dict:
     return {'subject': f'Weekly Product Pulse + Customer Clarification — Groww — {bundle.date}',
             'body': bundle.weekly_pulse + '\n\n---\n\nReusable support snippet\n\n' + explainer_markdown(bundle)}
