@@ -19,8 +19,12 @@ def main():
     remaining = []
     if not links['github_repository']:
         remaining.append('GitHub repository URL')
-    remaining.extend(['Publish source and verify GitHub CI', 'Hosted deployment and browser verification',
-                      'Actual approved Google Doc entry evidence',
+    github_check_path = ROOT / 'outputs/phase5_github_checkpoint.json'
+    github_check = json.loads(github_check_path.read_text(encoding='utf-8')) if github_check_path.exists() else {}
+    if not (github_check.get('repository') == links['github_repository']
+            and github_check.get('source_published') is True and github_check.get('ci_status') == 'PASS'):
+        remaining.append('Publish source and verify GitHub CI')
+    remaining.extend(['Hosted deployment and browser verification', 'Actual approved Google Doc entry evidence',
                       'Actual Gmail draft ID/screenshot and matching execution receipts'])
     checkpoint = {'checked_at': datetime.now(timezone.utc).isoformat(),
                   'local_package_status': manifest['local_package_status'],

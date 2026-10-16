@@ -1,6 +1,6 @@
 # Phase 5 — Streamlit Community Cloud deployment
 
-The application and deployment bundle are ready and pass a clean-package smoke test. **No hosted URL exists yet.** The selected repository is [FaizalAslam/Milestone-5](https://github.com/FaizalAslam/Milestone-5), on branch `main`. Publishing the prepared source, Streamlit sign-in, and the live deployment checks remain to be completed. Phase 4 also needs the authenticated production n8n endpoint and Google connections, followed by human approval of an actual save. Local readiness is recorded separately from these live acceptance checks.
+The application source is published to [FaizalAslam/Milestone-5](https://github.com/FaizalAslam/Milestone-5), on branch `main`, and its initial [GitHub checks passed](https://github.com/FaizalAslam/Milestone-5/actions/runs/38888457085). **No hosted URL exists yet.** Streamlit sign-in, deployment, and the hosted acceptance checks remain to be completed. The n8n workflows are imported with actual tool bindings and selected Google credentials; authenticated production discovery and the human-approved Google writes still need verification. Local readiness is recorded separately from live acceptance.
 
 ## 1. What is prepared
 
